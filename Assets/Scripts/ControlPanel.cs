@@ -64,12 +64,12 @@ public class ControlPanel : MonoBehaviour
         {
             if (!checkPanelMinimap)
             {
-                panelMinimap.SetActive(true);
+                ShowMiniMap();
                 checkPanelMinimap = true;
             }
             else
             {
-                panelMinimap.SetActive(false);
+                CloseMiniMap();
                 checkPanelMinimap = false;
             }
         }

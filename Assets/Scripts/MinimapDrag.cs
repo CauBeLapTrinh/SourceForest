@@ -26,30 +26,29 @@ public class MinimapDrag : MonoBehaviour
         ResetCamera = cameraPos.transform.position;
     }
 
-    /*void Update()
+    void FixedUpdate()
     {
         if (isDrag)
         {
-            Difference = cameraPos.ScreenToWorldPoint(Input.mousePosition) - cameraPos.transform.position;
-            cameraPos.transform.position = Origin - Difference;
+            Difference = Camera.main.ScreenToWorldPoint(Input.mousePosition);
 
-            Vector3 tem = cameraPos.transform.position;
+            Vector3 tem = Origin - Difference;
             tem.z = -25;
 
             cameraPos.transform.position = tem;
         }
-    }*/
+    }
 
     Vector3 temp;
     private void OnMouseDown()
     { 
         if (ControlMiniMap.instance.isMiniMapOn)
         {
-            Difference = cameraPos.ScreenToViewportPoint(Input.mousePosition);
+            Origin = Camera.main.ScreenToWorldPoint(Input.mousePosition);
 
             Debug.Log(Difference);
 
-            Debug.Log(Vector2.Distance(Difference, cameraPos.transform.GetChild(0).position));
+            //Debug.Log(Vector2.Distance(Difference, cameraPos.transform.GetChild(0).position));
 
             isDrag = true;
         }
