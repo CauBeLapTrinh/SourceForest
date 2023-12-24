@@ -39,10 +39,10 @@ public class ControlScenes : MonoBehaviour
         loadCoin = Money.coin;
         loadGem = Money.gem;
 
-        yourCoinText.text = loadCoin.ToString();
-        yourGemText.text = loadGem.ToString();
+        yourCoinText.text = "Coin: " + loadCoin.ToString();
+        yourGemText.text = "Gem: " + loadGem.ToString();
 
-        Debug.Log("so luong enemttree: "+amountTree);
+        Debug.Log("so luong enemttree: " + amountTree);
         Debug.Log("so luong enemtbeer: " + amountBeer);
     }
 

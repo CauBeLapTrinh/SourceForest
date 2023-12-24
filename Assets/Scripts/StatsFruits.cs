@@ -15,7 +15,10 @@ public class StatsFruits : MonoBehaviour
             if(gameObject.name.IndexOf("Cherries") == 0)
             {
                 PlayerAttack.damage += 5;
-            }else if(gameObject.name.IndexOf("Orange") == 0)
+
+                PlayerAttack.instance.textDamage.text = "Attack: " + PlayerAttack.damage.ToString();
+            }
+            else if(gameObject.name.IndexOf("Orange") == 0)
             {
                 PlayerHealth playerHealth = collision.gameObject.GetComponent<PlayerHealth>();
                 playerHealth.addHealth(plusHealth);

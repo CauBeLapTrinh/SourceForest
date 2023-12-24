@@ -35,10 +35,14 @@ public class ControlPanel : MonoBehaviour
     public void ShowMiniMap()
     {
         panelMinimap.SetActive(true);
+
+        ControlMiniMap.instance.isMiniMapOn = true;
     }
     public void CloseMiniMap()
     {
         panelMinimap.SetActive(false);
+
+        ControlMiniMap.instance.isMiniMapOn = false;
     }
     void Pause()
     {
