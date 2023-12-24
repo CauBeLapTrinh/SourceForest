@@ -5,6 +5,8 @@ using UnityEngine.UI;
 
 public class PlayerAttack : MonoBehaviour
 {
+    public static PlayerAttack instance;
+
     public static float damage;
     public Text textDamage;
     public GameObject arrowPrefab;
@@ -22,25 +24,26 @@ public class PlayerAttack : MonoBehaviour
 
     public Transform parentRotation;
 
+    private void Awake()
+    {
+        instance = this;
+    }
     // Update is called once per frame
     private void Start()
     {
-        textDamage.text = damage.ToString();
+        damage = Player.damage;
+        textDamage.text = "Attack: " + damage.ToString();
+
         animator = GetComponent<Animator>();
         spriteRenderer = GetComponent<SpriteRenderer>();
-
-        damage = Player.damage;
     }
     void Update()
     {
-        if (Input.GetButtonDown("Fire1"))
+        if (Input.GetButtonDown("Fire1") && !ControlMiniMap.instance.isMiniMapOn)
         {
+            mousePos = cam.ScreenToWorldPoint(Input.mousePosition);
             fireBullet();
         }
-
-        mousePos = cam.ScreenToWorldPoint(Input.mousePosition);
-
-        textDamage.text = damage.ToString();
     }
 
 
@@ -53,27 +56,32 @@ public class PlayerAttack : MonoBehaviour
             {
                 spriteRenderer.flipX = false;
                 animator.SetTrigger("Attack");
-                Invoke("ShootRight", 0.3f);
+
+                StartCoroutine(ShootRight());
             }
             else
             {
                 spriteRenderer.flipX = true;
                 animator.SetTrigger("Attack");
-                Invoke("ShootLeft", 0.3f);
+                StartCoroutine(ShootLeft());
             }
         }
     }
 
-    void ShootLeft()
+    IEnumerator ShootLeft()
     {
+        yield return new WaitForSeconds(0.3f);
+
         GameObject arrow = Instantiate(arrowPrefab, parentRotation.position, parentRotation.rotation);
         Rigidbody2D rb = arrow.GetComponent<Rigidbody2D>();
         rb.AddForce(parentRotation.up * bulletForce, ForceMode2D.Impulse);
 
         audioSource.Play();
     }
-    void ShootRight()
+    IEnumerator ShootRight()
     {
+        yield return new WaitForSeconds(0.3f);
+
         GameObject arrow = Instantiate(arrowPrefab, parentRotation.position, parentRotation.rotation);
         Rigidbody2D rb = arrow.GetComponent<Rigidbody2D>();
         rb.AddForce(parentRotation.up * bulletForce, ForceMode2D.Impulse);

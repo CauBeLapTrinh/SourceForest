@@ -36,11 +36,11 @@ public class ItemCollect : MonoBehaviour
                 if (collision.gameObject.name.IndexOf("Coin") == 0)
                 {
                     countCoin++;
-                    txtCountCoin.text = countCoin.ToString();
+                    txtCountCoin.text = "Coin: " + countCoin.ToString();
                 }else if (collision.gameObject.name.IndexOf("Gem") == 0)
                 {
                     countGem++;
-                    txtCountGem.text = countGem.ToString();
+                    txtCountGem.text = "Gem: " + countGem.ToString();
                 }
                 audioCollectCoinOrGem.Play();
             }
