@@ -8,49 +8,61 @@ using System.IO;
 
 public class ControlScenes : MonoBehaviour
 {
+    public static ControlScenes instance;
+    public static bool isNextScene;
+
     public Text yourCoinText;
     public Text yourGemText;
 
-    public static int amountTree = 0;
-    public static int amountBeer = 0;
+    public int amountTree;
+    public int amountBeer;
 
     int loadCoin;
     int loadGem;
 
-    static int getSceneIndex;
+    private void Awake()
+    {
+        instance = this;
+    }
     // Start is called before the first frame update
     void Start()
     {
-        Scene scene = SceneManager.GetActiveScene();
-
-        getSceneIndex = scene.buildIndex;
-
-        Debug.Log(getSceneIndex);
-        if (getSceneIndex == 1)
-        {
-            amountBeer = 8;
-            amountTree = 8;
-        }else if (getSceneIndex == 3)
-        {
-            amountBeer = 14;
-            amountTree = 10;
-        }
-
         loadCoin = Money.coin;
         loadGem = Money.gem;
 
         yourCoinText.text = "Coin: " + loadCoin.ToString();
         yourGemText.text = "Gem: " + loadGem.ToString();
 
-        Debug.Log("so luong enemttree: " + amountTree);
-        Debug.Log("so luong enemtbeer: " + amountBeer);
+        isNextScene = false;
     }
 
-    public static void nextScene()
+    public void CheckWin()
+    {
+        StartCoroutine(IECheckWin());
+    }
+
+    IEnumerator IECheckWin()
+    {
+        if (ControlPanel.instance.countBeerEnemy == amountBeer
+            && ControlPanel.instance.countTreeEnemy == amountTree
+            && !isNextScene)
+        {
+            isNextScene = true;
+
+            yield return new WaitForSeconds(5f);
+
+            instance.NextScene();
+        }
+    }
+
+    public void NextScene()
     {
         Money.coin = ItemCollect.countCoin;
         Money.gem = ItemCollect.countGem;
 
-        SceneManager.LoadScene(getSceneIndex+1);
+        ControlPanel.instance.countBeerEnemy = 0;
+        ControlPanel.instance.countTreeEnemy = 0;
+
+        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 1);
     }
 }

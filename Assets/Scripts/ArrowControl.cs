@@ -13,9 +13,9 @@ public class ArrowControl : MonoBehaviour
         myBody = GetComponent<Rigidbody2D>();
     }
 
-    public void removeForce()
+    public void RemoveForce()
     {
-        myBody.velocity = new Vector2(0, 0);
+        myBody.velocity = Vector2.zero;
     }
 
     private void OnTriggerEnter2D(Collider2D collision)
@@ -23,13 +23,13 @@ public class ArrowControl : MonoBehaviour
         if (collision.gameObject.tag == "Enemy")
         {
             EnemyHealth enemy = collision.gameObject.GetComponent<EnemyHealth>();
-            enemy.addDamage(damage);
-            removeForce();
+            enemy.AddDamage(damage);
+            RemoveForce();
             Destroy(gameObject);
         }
         else if (collision.gameObject.tag == "WallAndSprite")
         {
-            removeForce();
+            RemoveForce();
             Destroy(gameObject);
         }
     }

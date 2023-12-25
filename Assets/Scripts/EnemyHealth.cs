@@ -1,13 +1,10 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UI;
+
 
 public class EnemyHealth : MonoBehaviour
 {
-    public Text countBeerKill;
-    public Text countTreeKill;
-
     public float maxHealth;
     float currentHealth;
 
@@ -37,7 +34,7 @@ public class EnemyHealth : MonoBehaviour
 
     // Update is called once per frame
 
-    public void addDamage(float damage)
+    public void AddDamage(float damage)
     {
         currentHealth -= damage;
 
@@ -46,23 +43,33 @@ public class EnemyHealth : MonoBehaviour
         healthBar.setHealth(currentHealth);
         if (currentHealth <= 0)
         {
-            if (gameObject.name == "Enemy1")
-            {
-                CountKillEnemy.countBeerEnemy++;
-                countBeerKill.text = CountKillEnemy.countBeerEnemy.ToString();
-            }
-            else if (gameObject.name == "Enemy2")
-            {
-                CountKillEnemy.countTreeEnemy++;
-                countTreeKill.text = CountKillEnemy.countTreeEnemy.ToString();
-            }
-
-            Instantiate(deadAnim, transform.position, Quaternion.identity);
-            Instantiate(itemDrop[indexItemDrop()], transform.position, transform.rotation);
-            gameObject.SetActive(false);
+            MakeDead();
         }
     }
-    int indexItemDrop()
+
+    void MakeDead()
+    {
+        if (gameObject.name == "Enemy1")
+        {
+            ControlPanel.instance.countBeerEnemy++;
+            ControlPanel.instance.countBeerKill.text = ControlPanel.instance.countBeerEnemy.ToString() + " / " + ControlScenes.instance.amountBeer;
+        }
+        else if (gameObject.name == "Enemy2")
+        {
+            ControlPanel.instance.countTreeEnemy++;
+            ControlPanel.instance.countTreeKill.text = ControlPanel.instance.countTreeEnemy.ToString() + " / " + ControlScenes.instance.amountTree;
+        }
+
+        Instantiate(deadAnim, transform.position, Quaternion.identity);
+        Instantiate(itemDrop[IndexItemDrop()], transform.position, transform.rotation);
+        gameObject.SetActive(false);
+
+        ControlScenes.instance.CheckWin();
+    }
+
+    
+
+    int IndexItemDrop()
     {
         int random = randomNumber.rd.Next(1, 101);
         if (random <= 10) return 0;

@@ -12,7 +12,6 @@ public class ControlMarket : MonoBehaviour
     public Text yourCoinText;
     public Text yourGemText;
 
-
     int priceCherrie = 3;
     int priceOrange = 5;
 
@@ -63,7 +62,7 @@ public class ControlMarket : MonoBehaviour
         Money.coin = yourCoin;
         Money.gem = yourGem;
 
-        SceneManager.LoadScene(3);
+        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 1);
     }
     public void ClosePanelNotify()
     {

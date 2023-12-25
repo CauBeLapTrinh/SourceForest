@@ -2,18 +2,39 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 public class ControlPanel : MonoBehaviour
 {
-    static bool gameIsPause = false;
+    public static ControlPanel instance;
 
+    static bool gameIsPause = false;
+    [Header("Text")]
+    public Text countBeerKill;
+    public Text countTreeKill;
+
+    public int countBeerEnemy = 0;
+    public int countTreeEnemy = 0;
+    [Header("Audio")]
+    public AudioSource finishGame;
+    public AudioSource audioBGM;
+    [Header("Panel")]
     public GameObject panelEsc;
+    public GameObject panelMission;
     public GameObject panelMinimap;
 
-    public AudioSource audioBGM;
-
     bool checkPanelMinimap = true;
+    bool isOnPanelMission = true;
 
+    private void Awake()
+    {
+        instance = this;
+    }
+    private void Start()
+    {
+        countBeerKill.text = countBeerEnemy.ToString() + " / " + ControlScenes.instance.amountBeer;
+        countTreeKill.text = countTreeEnemy.ToString() + " / " + ControlScenes.instance.amountTree;
+    }
     public void gotoHomeScene()
     {
         SceneManager.LoadScene(0);
@@ -50,6 +71,23 @@ public class ControlPanel : MonoBehaviour
         Time.timeScale = 0f;
         audioBGM.Pause();
         gameIsPause = true;
+    }
+
+    public void ClosePanelMission()
+    {
+        panelMission.SetActive(false);
+
+        isOnPanelMission = false;
+    }
+    public void ShowPanelMission()
+    {
+        panelMission.SetActive(true);
+
+        isOnPanelMission = true;
+    }
+    public bool IsOnPanelMission()
+    {
+        return isOnPanelMission;
     }
 
     private void Update()
