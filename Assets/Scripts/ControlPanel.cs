@@ -57,13 +57,13 @@ public class ControlPanel : MonoBehaviour
     {
         panelMinimap.SetActive(true);
 
-        ControlMiniMap.instance.isMiniMapOn = true;
+        ControlMiniMap.isMiniMapOn = true;
     }
     public void CloseMiniMap()
     {
         panelMinimap.SetActive(false);
 
-        ControlMiniMap.instance.isMiniMapOn = false;
+        ControlMiniMap.isMiniMapOn = false;
     }
     void Pause()
     {

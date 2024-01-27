@@ -123,7 +123,7 @@ public class MinimapDrag : MonoBehaviour
     Vector3 temp;
     private void OnMouseDown()
     { 
-        if (ControlMiniMap.instance.isMiniMapOn)
+        if (ControlMiniMap.isMiniMapOn)
         {
             isDrag = true;
 

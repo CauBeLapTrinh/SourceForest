@@ -39,7 +39,7 @@ public class PlayerAttack : MonoBehaviour
     }
     void Update()
     {
-        if (Input.GetButtonDown("Fire1") && !ControlMiniMap.instance.isMiniMapOn && !ControlPanel.instance.IsOnPanelMission())
+        if (Input.GetButtonDown("Fire1") && !ControlMiniMap.isMiniMapOn && !ControlPanel.instance.IsOnPanelMission())
         {
             mousePos = cam.ScreenToWorldPoint(Input.mousePosition);
             FireBullet();

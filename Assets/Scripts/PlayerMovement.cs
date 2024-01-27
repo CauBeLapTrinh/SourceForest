@@ -32,7 +32,7 @@ public class PlayerMovement : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (canMove)
+        if (canMove && !ControlMiniMap.isMiniMapOn)
         {
             movement.x = Input.GetAxisRaw("Horizontal");
             movement.y = Input.GetAxisRaw("Vertical");
@@ -60,7 +60,7 @@ public class PlayerMovement : MonoBehaviour
     }
     private void FixedUpdate()
     {
-        if (canMove)
+        if (canMove && !ControlMiniMap.isMiniMapOn)
         {
             rb.MovePosition(rb.position + movement * maxSpeed * Time.fixedDeltaTime);
 
