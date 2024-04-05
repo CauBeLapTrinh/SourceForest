@@ -1,3 +1,4 @@
+using DG.Tweening;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
@@ -48,6 +49,17 @@ public class ItemCollect : MonoBehaviour
             Instantiate(collectEffect, collision.transform.position, collision.transform.rotation);
 
             Destroy(collision.gameObject);
+        }
+        else if (collision.CompareTag("Weapon"))
+        {
+            Transform weaponR = transform.GetComponent<PlayerControl>().weaponRotate;
+            WeaponRotateControl weaponRotateControl = weaponR.GetComponent<WeaponRotateControl>();
+
+            collision.transform.DOKill();
+            collision.transform.GetChild(0).gameObject.SetActive(false);
+            collision.transform.parent = weaponR;
+
+            weaponRotateControl.SetPosChild();
         }
     }
 }

@@ -7,6 +7,9 @@ TagManager:
   - Enemy
   - WallAndSprite
   - Item
+  - BoxItem
+  - Weapon
+  - Arrow
   layers:
   - Default
   - TransparentFX

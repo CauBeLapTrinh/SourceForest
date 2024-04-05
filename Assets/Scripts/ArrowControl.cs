@@ -27,7 +27,7 @@ public class ArrowControl : MonoBehaviour
             RemoveForce();
             Destroy(gameObject);
         }
-        else if (collision.gameObject.tag == "WallAndSprite")
+        else if (collision.gameObject.tag == "WallAndSprite" || collision.CompareTag("BoxItem"))
         {
             RemoveForce();
             Destroy(gameObject);

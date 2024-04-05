@@ -6,7 +6,7 @@ public class CameraFllower : MonoBehaviour
 {
     public Transform target;
 
-    public float smoothSpeed = 0.125f;
+    public float smoothSpeed = 0.2f;
 
     public Vector3 offset;
 
