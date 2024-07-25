@@ -1,0 +1,34 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+namespace Minigame.Forest
+{
+    public class Controller : MonoBehaviour
+    {
+        public static Controller instance;
+
+        [Header("Prefabs")]
+        public List<GameObject> itemDrop;
+        public List<GameObject> weapons;
+
+        public GameObject enemyDeadAnim;
+
+        private void Awake()
+        {
+            instance = this;
+        }
+        // Start is called before the first frame update
+        void Start()
+        {
+
+        }
+
+        // Update is called once per frame
+        void Update()
+        {
+
+        }
+    }
+
+}
