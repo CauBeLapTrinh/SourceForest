@@ -3,31 +3,30 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Minigame.Forest
+namespace Minigame.MonsterRush
 {
-
-public class Weapon : MonoBehaviour
-{
-    public float damage;
-    // Start is called before the first frame update
-
-    private void OnTriggerEnter2D(Collider2D collision)
+    public class Weapon : MonoBehaviour
     {
-        if (collision.CompareTag("Enemy"))
+        public float damage;
+        // Start is called before the first frame update
+
+        private void OnTriggerEnter2D(Collider2D collision)
         {
-            EnemyHealth enemy = collision.gameObject.GetComponent<EnemyHealth>();
-            enemy.AddDamage(damage);
+            if (collision.CompareTag("Enemy"))
+            {
+                MonsterControl monster = collision.gameObject.GetComponent<MonsterControl>();
+                monster.TakeDame(damage);
+            }
+        }
+
+        public void PlayAnimIdle()
+        {
+            transform.DOMoveY(transform.position.y + 0.2f, 0.5f).SetEase(Ease.Linear).SetLoops(-1, LoopType.Yoyo);
+        }
+
+        public void StopDotWeen()
+        {
+            transform.DOKill();
         }
     }
-
-    public void PlayAnimIdle()
-    {
-        transform.DOMoveY(transform.position.y + 0.2f, 0.5f).SetEase(Ease.Linear).SetLoops(-1, LoopType.Yoyo);
-    }
-
-    public void StopDotWeen()
-    {
-        transform.DOKill();
-    }
-}
 }

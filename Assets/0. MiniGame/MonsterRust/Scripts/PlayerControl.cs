@@ -3,84 +3,118 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PlayerControl : MonoBehaviour
+namespace Minigame.MonsterRush
 {
-    public float damage;
-    public float rangeAttack;
-    public float speedAttack;
-    public float speedBullet;
-
-    public GameObject bulletPrefabs;
-    float nextAttack = 0;
-    // Start is called before the first frame update
-    void Start()
+    public class PlayerControl : MonoBehaviour
     {
 
-    }
+        [Header("--------- Properties ---------")]
+        [Header("--- Attack ---")]
+        public float damage;
+        public float rangeAttack;
+        public float speedAttack;
+        public float speedBullet;
 
-    // Update is called once per frame
-    void Update()
-    {
-        if (Time.time > nextAttack)
+        float nextAttack = 0;
+        [Header("--- Health ---")]
+        public float maxHealth;
+        float currentHealth;
+
+        [Header("--------- BulletPrefab ---------")]
+        public GameObject bulletPrefabs;
+
+        [Header("--------- HealthBar ---------")]
+        public ProgressBar healthBar;
+
+        bool isDead = false;
+        // Start is called before the first frame update
+        void Start()
         {
-            Attack();
-            nextAttack = Time.time + 1 / speedAttack;
-        }
-    }
-
-    public Transform GetEnemyNearest()
-    {
-        Collider2D[] colls = Physics2D.OverlapCircleAll(transform.position, rangeAttack, Controller.instance.enemyLayer);
-
-        if (colls.Length == 0)
-        {
-            return null;
+            currentHealth = maxHealth;
+            healthBar.SetMaxValue(maxHealth);
         }
 
-        float minDistance = 100f;
-        int indexNearest = 0;
-        for (int i = 0; i < colls.Length; i++)
+        // Update is called once per frame
+        void Update()
         {
-            float distanceCurrent = Vector2.Distance(colls[i].transform.position, transform.position);
-
-            if (distanceCurrent < minDistance)
+            if (Time.time > nextAttack)
             {
-                minDistance = distanceCurrent;
-                indexNearest = i;
+                Attack();
+                nextAttack = Time.time + 1 / speedAttack;
             }
         }
-        return colls[indexNearest].transform;
-    }
-    public void Attack()
-    {
-        Transform enemyNearest = GetEnemyNearest();
-        if (enemyNearest != null)
+
+        public Transform GetEnemyNearest()
         {
-            Vector3 eulerBullet = enemyNearest.transform.position - transform.position;
+            Collider2D[] colls = Physics2D.OverlapCircleAll(transform.position, rangeAttack, Controller.instance.enemyLayer);
 
-            CreateBullet(eulerBullet);
+            if (colls.Length == 0)
+            {
+                return null;
+            }
+
+            float minDistance = 100f;
+            int indexNearest = 0;
+            for (int i = 0; i < colls.Length; i++)
+            {
+                float distanceCurrent = Vector2.Distance(colls[i].transform.position, transform.position);
+
+                if (distanceCurrent < minDistance)
+                {
+                    minDistance = distanceCurrent;
+                    indexNearest = i;
+                }
+            }
+            return colls[indexNearest].transform;
         }
-    }
+        public void Attack()
+        {
+            Transform enemyNearest = GetEnemyNearest();
+            if (enemyNearest != null)
+            {
+                Vector3 eulerBullet = enemyNearest.transform.position - transform.position;
 
-    public void CreateBullet(Vector3 eulerAngle)
-    {
-        float zAxis = Mathf.Atan2(eulerAngle.x, eulerAngle.y) * Mathf.Rad2Deg;
+                CreateBullet(eulerBullet);
+            }
+        }
 
-        Quaternion rotation = Quaternion.Euler(0, 0, -zAxis);
+        public void CreateBullet(Vector3 eulerAngle)
+        {
+            float zAxis = Mathf.Atan2(eulerAngle.x, eulerAngle.y) * Mathf.Rad2Deg;
 
-        GameObject bullet = Instantiate(bulletPrefabs, transform.position, rotation);
+            Quaternion rotation = Quaternion.Euler(0, 0, -zAxis);
 
-        Physics2D.IgnoreCollision(GetComponent<Collider2D>(), bullet.GetComponent<Collider2D>());
-        Bullet sciptBullet = bullet.GetComponent<Bullet>();
+            GameObject bullet = Instantiate(bulletPrefabs, transform.position, rotation);
 
-        float angle = (bullet.transform.rotation.eulerAngles.z + 90) * Mathf.Deg2Rad;
+            Physics2D.IgnoreCollision(GetComponent<Collider2D>(), bullet.GetComponent<Collider2D>());
+            Bullet sciptBullet = bullet.GetComponent<Bullet>();
+            sciptBullet.SetDamage(damage);
 
-        Vector2 vectorF = new(Mathf.Cos(angle), Mathf.Sin(angle));
-        sciptBullet.Shoot(vectorF, speedBullet);
-    }
-    private void OnDrawGizmos()
-    {
-        Gizmos.color = Color.yellow;
-        Gizmos.DrawWireSphere(transform.position, rangeAttack);
+            float angle = (bullet.transform.rotation.eulerAngles.z + 90) * Mathf.Deg2Rad;
+
+            Vector2 vectorF = new(Mathf.Cos(angle), Mathf.Sin(angle));
+            sciptBullet.Shoot(vectorF, speedBullet);
+        }
+        public void TakeDame(float damage)
+        {
+            if (isDead) return;
+
+            currentHealth -= damage;
+
+            if (currentHealth <= 0)
+            {
+                isDead = true;
+
+                currentHealth = 0;
+            }
+
+            healthBar.SetValue(currentHealth);
+            healthBar.SetText($"{currentHealth}/{maxHealth}");
+        }
+        private void OnDrawGizmos()
+        {
+            Gizmos.color = Color.yellow;
+            Gizmos.DrawWireSphere(transform.position, rangeAttack);
+        }
     }
 }

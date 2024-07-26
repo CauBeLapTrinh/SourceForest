@@ -9,7 +9,7 @@ namespace Minigame.Forest
         public float maxHealth;
         float currentHealth;
 
-        public HealthBar healthBar;
+        public ProgressBar healthBar;
 
         public float damage = 5;
 
@@ -20,8 +20,8 @@ namespace Minigame.Forest
         void Start()
         {
             currentHealth = maxHealth;
-            healthBar.setMaxHealth(maxHealth);
-            healthBar.setHealth(maxHealth);
+            healthBar.SetMaxValue(maxHealth);
+            healthBar.SetValue(maxHealth);
 
             healthBar.gameObject.SetActive(false);
         }
@@ -34,7 +34,7 @@ namespace Minigame.Forest
 
             healthBar.gameObject.SetActive(true);
 
-            healthBar.setHealth(currentHealth);
+            healthBar.SetValue(currentHealth);
             if (currentHealth <= 0)
             {
                 MakeDead();

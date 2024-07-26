@@ -7,15 +7,11 @@ namespace Minigame.Forest
 
     public class DestroyGameObj : MonoBehaviour
     {
-        public float autoDestroyTime;
+        public float time;
         // Start is called before the first frame update
         void Start()
         {
-            Invoke("DestroyMe", autoDestroyTime);
-        }
-        void DestroyMe()
-        {
-            Destroy(gameObject);
+            Destroy(gameObject, time);
         }
     }
 }

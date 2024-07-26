@@ -2,24 +2,36 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Controller : MonoBehaviour
+namespace Minigame.MonsterRush
 {
-    public static Controller instance;
-    
-    public LayerMask enemyLayer;
-    private void Awake()
+    public class Controller : MonoBehaviour
     {
-        instance = this;
-    }
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
+        public static Controller instance;
 
-    // Update is called once per frame
-    void Update()
-    {
-        
+        [Header("--------- PlayerControl ---------")]
+        public Transform player;
+        public PlayerControl playerScript;
+
+        [Header("--------- Layer ---------")]
+        public LayerMask enemyLayer;
+        [Header("--------- Item prefabs ---------")]
+        public GameObject enemyDeadAnim;
+        public GameObject textHit;
+        public List<GameObject> weapons;
+        private void Awake()
+        {
+            instance = this;
+        }
+        // Start is called before the first frame update
+        void Start()
+        {
+
+        }
+
+        // Update is called once per frame
+        void Update()
+        {
+
+        }
     }
 }

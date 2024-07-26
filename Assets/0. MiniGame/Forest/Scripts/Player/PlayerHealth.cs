@@ -12,7 +12,7 @@ public class PlayerHealth : MonoBehaviour
     public static float maxHealth;
     float currentHealth;
 
-    public HealthBar healthBar;
+    public ProgressBar healthBar;
     public GameObject deadAnim;
     public Text healthText;
     public AudioSource hurtSound;
@@ -27,8 +27,8 @@ public class PlayerHealth : MonoBehaviour
 
         maxHealth = StaticPropertis.health;
         currentHealth = maxHealth;
-        healthBar.setMaxHealth(maxHealth);
-        healthBar.setHealth(maxHealth);
+        healthBar.SetMaxValue(maxHealth);
+        healthBar.SetValue(maxHealth);
 
         healthText.text = currentHealth + "/" + maxHealth;
     }
@@ -40,7 +40,7 @@ public class PlayerHealth : MonoBehaviour
         {
             currentHealth = maxHealth;
         }
-        healthBar.setHealth(currentHealth);
+        healthBar.SetValue(currentHealth);
 
         healthText.text = currentHealth + "/" + maxHealth;
     }
@@ -49,7 +49,7 @@ public class PlayerHealth : MonoBehaviour
     {
         currentHealth -= damage;
 
-        healthBar.setHealth(currentHealth);
+        healthBar.SetValue(currentHealth);
         healthText.text = currentHealth + "/" + maxHealth;
         hurtSound.Play();
 
