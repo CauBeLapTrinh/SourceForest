@@ -9,6 +9,7 @@ namespace Minigame.MonsterRush
     public class PlayerControl : MonoBehaviour
     {
         public GunControl gun;
+        public ExpBar expBar;
         PlayerMovement playerMovement;
         [Header("--------- Properties ---------")]
         [Header("--- Attack ---")]
@@ -22,10 +23,14 @@ namespace Minigame.MonsterRush
         public float maxHealth;
         float currentHealth;
 
-        [Header("--------- BulletPrefab ---------")]
+        [Header("--------- Exp ---------")]
+        public float rangeTakeExp;
 
         [Header("--------- HealthBar ---------")]
         public ProgressBar healthBar;
+        [Header("--------- Hand ---------")]
+        public SpriteRenderer leftHand;
+        public SpriteRenderer rightHand;
 
         bool isDead = false;
         bool isNearEnemy = false;
@@ -47,6 +52,24 @@ namespace Minigame.MonsterRush
                 Shoot();
                 nextShoot = Time.time + 1 / speedShoot;
             }
+
+            CheckRangeExp();
+        }
+        public void CheckRangeExp()
+        {
+            Collider2D[] colls = Physics2D.OverlapCircleAll(transform.position, rangeTakeExp, Controller.instance.expLayer);
+            if (colls.Length > 0)
+            {
+                foreach (var item in colls)
+                {
+                    ExpControl expItem = item.GetComponent<ExpControl>();
+                    expItem.SetTarget(transform);
+                }
+            }
+        }
+        public void TakeExp(float expTake)
+        {
+            expBar.TakeExperience(expTake);
         }
 
         public bool IsNearEnemy()
@@ -119,12 +142,16 @@ namespace Minigame.MonsterRush
 
         public void SetMelee(GameObject weaponPrefab)
         {
+            MeleeWeaponControl meleeWeaponControl = weaponPrefab.GetComponent<MeleeWeaponControl>();
+            rightHand.sprite = meleeWeaponControl.spriteWeapon;
+
             meleeRotate.AddWeapon(weaponPrefab);
         }
         private void OnDrawGizmos()
         {
             Gizmos.color = Color.yellow;
             Gizmos.DrawWireSphere(transform.position, rangeShoot);
+            Gizmos.DrawWireSphere(transform.position, rangeTakeExp);
         }
         public bool IsFacingRight()
         {

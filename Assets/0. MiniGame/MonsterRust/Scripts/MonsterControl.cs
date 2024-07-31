@@ -9,6 +9,7 @@ namespace Minigame.MonsterRush
         public Transform targetTransform;
 
         [Header("--------- Properties ---------")]
+        public int levelMonster;
         [Header("--- Movement ---")]
         public float speed;
         [Header("--- Attack ---")]
@@ -95,6 +96,7 @@ namespace Minigame.MonsterRush
             isDead = true;
 
             Instantiate(Controller.instance.enemyDeadAnim, transform.position, Quaternion.identity);
+            Instantiate(Controller.instance.exps[levelMonster], transform.position, Quaternion.identity);
 
             Destroy(gameObject);
         }

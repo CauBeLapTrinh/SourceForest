@@ -8,7 +8,7 @@ public class ProgressBar : MonoBehaviour
     public Slider slider;
     public Gradient gradient;
     public Image fill;
-    public Text textHealth;
+    public Text txtSet;
 
     public void SetMaxValue(float health)
     {
@@ -27,7 +27,7 @@ public class ProgressBar : MonoBehaviour
 
     public void SetText(string textSet)
     {
-        textHealth.text = textSet;
+        txtSet.text = textSet;
     }
 }
 

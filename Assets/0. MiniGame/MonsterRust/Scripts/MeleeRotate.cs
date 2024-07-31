@@ -47,13 +47,14 @@ namespace Minigame.MonsterRush
         }
         public void AddWeapon(GameObject weaponPrefab)
         {
-            GameObject weaponObj = Instantiate(weaponPrefab, transform);
-            MeleeWeaponControl meleeWeaponControl = weaponObj.GetComponent<MeleeWeaponControl>();
-
+            MeleeWeaponControl meleeWeaponControl = weaponPrefab.GetComponent<MeleeWeaponControl>();
             if (meleeWeaponControl.indexWeapon != currentIndex && currentIndex != -1)
             {
                 ClearWeapon();
             }
+
+            Instantiate(weaponPrefab, transform);
+            
             currentIndex = meleeWeaponControl.indexWeapon;
 
             SetPosChild();

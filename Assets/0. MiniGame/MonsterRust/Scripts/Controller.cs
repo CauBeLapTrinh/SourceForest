@@ -14,10 +14,13 @@ namespace Minigame.MonsterRush
 
         [Header("--------- Layer ---------")]
         public LayerMask enemyLayer;
+        public LayerMask expLayer;
         [Header("--------- Item prefabs ---------")]
         public GameObject enemyDeadAnim;
         public GameObject textHit;
+        public GameObject boxItem;
         public List<GameObject> weapons;
+        public List<GameObject> exps;
         private void Awake()
         {
             instance = this;

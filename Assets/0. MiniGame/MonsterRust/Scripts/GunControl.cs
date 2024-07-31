@@ -13,17 +13,6 @@ namespace Minigame.MonsterRush
         public Transform pointGun;
 
         public Sprite gunImg;
-        // Start is called before the first frame update
-        void Start()
-        {
-            
-        }
-
-        // Update is called once per frame
-        void Update()
-        {
-
-        }
 
         public void Shoot(Transform enemyNearest)
         {

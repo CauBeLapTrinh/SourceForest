@@ -100,6 +100,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   indexWeapon: 0
   damage: 10
+  spriteWeapon: {fileID: 143021600, guid: 0d5e657ee5a074e4baa53d5b248a01d2, type: 3}
 --- !u!61 &9073361428009194634
 BoxCollider2D:
   m_ObjectHideFlags: 0
