@@ -1,45 +1,28 @@
+using Minigame.Forest;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Minigame.Forest
+namespace Minigame.MonsterRush
 {
-
-    public class WeaponRotateControl : MonoBehaviour
+    public class MeleeRotate : MonoBehaviour
     {
-        PlayerControl playerControl;
-
         public float radius;
         public float rotationSpeed = 5f;
+        int currentIndex = -1;
         // Start is called before the first frame update
         void Start()
         {
-            playerControl = GetComponentInParent<PlayerControl>();
             if (radius < 1f)
             {
                 radius = 1f;
             }
-
-            StartWeapon();
         }
 
         // Update is called once per frame
         void Update()
         {
             transform.Rotate(new Vector3(0, 0, -1) * rotationSpeed * Time.deltaTime);
-        }
-        public void StartWeapon()
-        {
-            if (StaticPropertis.indexWeapon.Count > 0)
-            {
-                for (int i = 0; i < StaticPropertis.indexWeapon.Count; i++)
-                {
-                    GameObject weapon = Instantiate(Controller.instance.weapons[StaticPropertis.indexWeapon[i]], transform);
-                    weapon.transform.GetChild(0).gameObject.SetActive(false);
-                }
-
-                SetPosChild();
-            }
         }
 
         public void SetPosChild()
@@ -60,6 +43,27 @@ namespace Minigame.Forest
                 posChild.localPosition = pos;
 
                 count++;
+            }
+        }
+        public void AddWeapon(GameObject weaponPrefab)
+        {
+            GameObject weaponObj = Instantiate(weaponPrefab, transform);
+            MeleeWeaponControl meleeWeaponControl = weaponObj.GetComponent<MeleeWeaponControl>();
+
+            if (meleeWeaponControl.indexWeapon != currentIndex && currentIndex != -1)
+            {
+                ClearWeapon();
+            }
+            currentIndex = meleeWeaponControl.indexWeapon;
+
+            SetPosChild();
+        }
+
+        public void ClearWeapon()
+        {
+            for (int i = 0; i < transform.childCount; i++)
+            {
+                Destroy(transform.GetChild(i).gameObject);
             }
         }
     }

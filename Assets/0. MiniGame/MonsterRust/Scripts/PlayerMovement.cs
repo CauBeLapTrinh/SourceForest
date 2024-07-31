@@ -14,14 +14,14 @@ namespace Minigame.MonsterRush
         bool canMove = true;
 
         Animator animator;
+        PlayerControl playerControl;
 
-        SpriteRenderer spriteRenderer;
         // Start is called before the first frame update
         void Start()
         {
             rb = GetComponent<Rigidbody2D>();
-            animator = GetComponent<Animator>();
-            spriteRenderer = GetComponent<SpriteRenderer>();
+            animator = GetComponentInChildren<Animator>();
+            playerControl = GetComponentInChildren<PlayerControl>();
         }
 
         // Update is called once per frame
@@ -32,17 +32,19 @@ namespace Minigame.MonsterRush
                 movement.x = Input.GetAxisRaw("Horizontal");
                 movement.y = Input.GetAxisRaw("Vertical");
 
-                animator.SetFloat("Horizontal", movement.x);
-                animator.SetFloat("Vertical", movement.y);
+                //animator.SetFloat("Horizontal", movement.x);
                 animator.SetFloat("Speed", movement.sqrMagnitude);
 
-                if (movement.x < 0 && !spriteRenderer.flipX)
+                if (!playerControl.IsNearEnemy())
                 {
-                    spriteRenderer.flipX = true;
-                }
-                else if (movement.x > 0 && spriteRenderer.flipX)
-                {
-                    spriteRenderer.flipX = false;
+                    if (movement.x < 0 && playerControl.IsFacingRight())
+                    {
+                        playerControl.SwapFace();
+                    }
+                    else if (movement.x > 0 && !playerControl.IsFacingRight())
+                    {
+                        playerControl.SwapFace();
+                    }
                 }
             }
             else if (!canMove)
