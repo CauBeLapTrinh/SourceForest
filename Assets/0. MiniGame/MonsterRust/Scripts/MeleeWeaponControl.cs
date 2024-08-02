@@ -9,6 +9,7 @@ namespace Minigame.MonsterRush
         [Header("--------- Properties ---------")]
         public int indexWeapon;
         public float damage;
+        public float speed;
         public Sprite spriteWeapon;
 
         private void OnTriggerEnter2D(Collider2D collision)

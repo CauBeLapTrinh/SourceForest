@@ -77,17 +77,9 @@ namespace Minigame.MonsterRush
 
             animator.SetTrigger("Open");
 
+            CanvasItem.instance.TurnOnPanel();
+
             StartCoroutine(DestroyBox());
-
-            GameObject itemDrop = Instantiate(Controller.instance.weapons[Random.Range(0, Controller.instance.weapons.Count)],
-                transform.position, Quaternion.identity);
-
-            Weapon weapon = itemDrop.GetComponent<Weapon>();
-
-            if (weapon != null)
-            {
-                weapon.PlayAnimIdle();
-            }
         }
 
         IEnumerator DestroyBox()

@@ -146,6 +146,7 @@ namespace Minigame.MonsterRush
             rightHand.sprite = meleeWeaponControl.spriteWeapon;
 
             meleeRotate.AddWeapon(weaponPrefab);
+            meleeRotate.SetSpeed(meleeWeaponControl.speed);
         }
         private void OnDrawGizmos()
         {

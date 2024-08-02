@@ -8,7 +8,7 @@ namespace Minigame.MonsterRush
     public class MeleeRotate : MonoBehaviour
     {
         public float radius;
-        public float rotationSpeed = 5f;
+        float rotationSpeed;
         int currentIndex = -1;
         // Start is called before the first frame update
         void Start()
@@ -23,6 +23,10 @@ namespace Minigame.MonsterRush
         void Update()
         {
             transform.Rotate(new Vector3(0, 0, -1) * rotationSpeed * Time.deltaTime);
+        }
+        public void SetSpeed(float setSpeed)
+        {
+            rotationSpeed = setSpeed;
         }
 
         public void SetPosChild()
