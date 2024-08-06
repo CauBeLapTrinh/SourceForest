@@ -10,6 +10,8 @@ namespace Minigame.MonsterRush
         public static Controller instance;
 
         int gemAmount;
+        [Header("--------- ScriptsControl ---------")]
+        public SpawnControl spawnControl;
 
         [Header("--------- PlayerControl ---------")]
         public Transform player;

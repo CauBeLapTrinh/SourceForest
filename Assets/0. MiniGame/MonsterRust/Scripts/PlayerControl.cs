@@ -10,7 +10,7 @@ namespace Minigame.MonsterRush
     {
         public GunControl gun;
         public ExpBar expBar;
-        PlayerMovement playerMovement;
+        public PlayerMovement playerMovement;
         [Header("--------- Properties ---------")]
         [Header("--- Attack ---")]
         public float damage;
@@ -35,6 +35,10 @@ namespace Minigame.MonsterRush
         bool isDead = false;
         bool isNearEnemy = false;
         bool isFacingRight = true;
+        // --------------------------------------
+        int levelSpeed = 0;
+        int[] speedLv = { 0, 2, 4, 6, 8, 11, 15 };
+
         // Start is called before the first frame update
         void Start()
         {
@@ -147,6 +151,27 @@ namespace Minigame.MonsterRush
 
             meleeRotate.AddWeapon(weaponPrefab);
             meleeRotate.SetSpeed(meleeWeaponControl.speed);
+        }
+        public void SetGun(GameObject gunPrefab)
+        {
+            GunControl gunControl = gunPrefab.GetComponent<GunControl>();
+            leftHand.sprite = gunControl.gunImg;
+
+            gun.SetGun(gunControl);
+        }
+        public void AddMaxHeal()
+        {
+            maxHealth += 5;
+            healthBar.SetMaxValue(maxHealth);
+        }
+        public void SpeedUp()
+        {
+            levelSpeed += 1;
+            playerMovement.SetSpeedUp(speedLv[levelSpeed]);
+        }
+        public int GetLevelSpeed()
+        {
+            return levelSpeed;
         }
         private void OnDrawGizmos()
         {

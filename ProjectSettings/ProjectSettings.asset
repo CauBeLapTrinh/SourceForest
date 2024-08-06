@@ -817,11 +817,11 @@ PlayerSettings:
   apiCompatibilityLevel: 6
   activeInputHandler: 0
   windowsGamepadBackendHint: 0
-  cloudProjectId: 
+  cloudProjectId: 0ec42819-55df-4429-9809-11c93b510e1d
   framebufferDepthMemorylessMode: 0
   qualitySettingsNames: []
-  projectName: 
-  organizationId: 
+  projectName: RGPForestGame
+  organizationId: vuviet1402
   cloudEnabled: 0
   legacyClampBlendShapeWeights: 0
   playerDataPath: 

@@ -11,6 +11,7 @@ TagManager:
   - Weapon
   - Arrow
   - Missile
+  - Exp
   layers:
   - Default
   - TransparentFX
@@ -21,7 +22,7 @@ TagManager:
   - Fruits
   - CoinGem
   - Enemy
-  - 
+  - Exp
   - 
   - 
   - 

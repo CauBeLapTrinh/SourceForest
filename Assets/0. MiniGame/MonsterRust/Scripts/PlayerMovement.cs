@@ -8,6 +8,7 @@ namespace Minigame.MonsterRush
     public class PlayerMovement : MonoBehaviour
     {
         public float maxSpeed;
+        int speedUp = 0;
 
         Rigidbody2D rb;
         Vector2 movement;
@@ -56,8 +57,19 @@ namespace Minigame.MonsterRush
         {
             if (canMove)
             {
-                rb.MovePosition(rb.position + movement * maxSpeed * Time.fixedDeltaTime);
+                float speedMovement = maxSpeed + (maxSpeed * speedUp / 100);
+
+                rb.MovePosition(rb.position + movement * speedMovement * Time.fixedDeltaTime);
             }
+        }
+
+        public float GetSpeedUp()
+        {
+            return speedUp;
+        }
+        public void SetSpeedUp(int setSpeed)
+        {
+            speedUp = setSpeed;
         }
     }
 }
