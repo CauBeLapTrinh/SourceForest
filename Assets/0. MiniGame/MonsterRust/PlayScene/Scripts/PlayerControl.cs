@@ -42,7 +42,7 @@ namespace Minigame.MonsterRush
         // Start is called before the first frame update
         void Start()
         {
-            playerMovement = GetComponent<PlayerMovement>();
+            playerMovement = GetComponentInParent<PlayerMovement>();
             gun = GetComponentInChildren<GunControl>();
             currentHealth = maxHealth;
             healthBar.SetMaxValue(maxHealth);
@@ -163,10 +163,14 @@ namespace Minigame.MonsterRush
         {
             maxHealth += 5;
             healthBar.SetMaxValue(maxHealth);
+            healthBar.SetValue(currentHealth);
+            healthBar.SetText($"{currentHealth}/{maxHealth}");
         }
         public void SpeedUp()
         {
             levelSpeed += 1;
+            Debug.Log(levelSpeed);
+            Debug.Log(speedLv[levelSpeed]);
             playerMovement.SetSpeedUp(speedLv[levelSpeed]);
         }
         public int GetLevelSpeed()

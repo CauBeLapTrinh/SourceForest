@@ -45,7 +45,10 @@ namespace Minigame.MonsterRush
         {
 
         }
-
+        public void Quit()
+        {
+            Application.Quit();
+        }
         public int GetGemAmount()
         {
             gemAmount = PlayerPrefs.GetInt("MonsterRush_GemAmount");

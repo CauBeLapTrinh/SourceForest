@@ -49,7 +49,7 @@ namespace Minigame.MonsterRush
         }
         public void SpeedUp()
         {
-            Controller.instance.playerScript.AddMaxHeal();
+            Controller.instance.playerScript.SpeedUp();
 
             TurnOffPanel();
         }
@@ -76,6 +76,8 @@ namespace Minigame.MonsterRush
         {
             SpawnWeapon();
 
+            SpawnSkills();
+
             SpawnEffect();
         }
 
@@ -94,15 +96,34 @@ namespace Minigame.MonsterRush
                 GameObject meleeGameObj = Instantiate(melees[Random.Range(0, melees.Count)], panelChoose.transform);
             }
         }
+        public void SpawnSkills()
+        {
+            GameObject effectGameObj = Instantiate(skills[Random.Range(0, skills.Count)], panelChoose.transform);
+            ItemControlCanvas itemControl = effectGameObj.GetComponent<ItemControlCanvas>();
+
+            if (effectGameObj.name.IndexOf("Speed") != -1)
+            {
+                if (Controller.instance.playerScript.GetLevelSpeed() == 6)
+                {
+                    SpawnSkills();
+
+                    Destroy(effectGameObj);
+
+                    return;
+                }
+
+                itemControl.SetTextSpeedCanvas();
+            }
+        }
         public void SpawnEffect()
         {
             GameObject effectGameObj = Instantiate(effects[Random.Range(0, effects.Count)], panelChoose.transform);
 
-            ItemControlCanvas gemControl = effectGameObj.GetComponent<ItemControlCanvas>();
+            ItemControlCanvas itemControl = effectGameObj.GetComponent<ItemControlCanvas>();
 
-            if (gemControl != null)
+            if (itemControl != null)
             {
-                gemControl.RandomGem();
+                itemControl.RandomGem();
             }
         }
 

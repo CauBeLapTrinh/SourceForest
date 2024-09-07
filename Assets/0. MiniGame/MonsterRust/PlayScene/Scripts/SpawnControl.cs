@@ -31,6 +31,11 @@ namespace Minigame.MonsterRush
         {
             if (Time.time > nextSpawnMonster)
             {
+                if (transform.childCount > 100)
+                {
+                    return;
+                }
+
                 StartCoroutine(SpawnMonsterAroundPlayer());
 
                 nextSpawnMonster = Time.time + rateSpawnMonster;

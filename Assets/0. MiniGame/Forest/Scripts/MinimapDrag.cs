@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.PlayerLoop;
-using static UnityEditor.Progress;
 
 namespace Minigame.Forest
 {

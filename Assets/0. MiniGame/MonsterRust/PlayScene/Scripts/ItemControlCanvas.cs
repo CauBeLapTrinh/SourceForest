@@ -22,7 +22,7 @@ namespace Minigame.MonsterRush
         public void SetTextSpeedCanvas()
         {
             textSet.text = $"+{speedLv[Controller.instance.playerScript.GetLevelSpeed()]}% -> " +
-                $"{speedLv[Controller.instance.playerScript.GetLevelSpeed() + 1]}";
+                $"{speedLv[Controller.instance.playerScript.GetLevelSpeed() + 1]}%";
         }
 
         public int GetGem() {  return gem; }

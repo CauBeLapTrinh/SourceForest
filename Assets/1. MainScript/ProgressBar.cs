@@ -10,17 +10,17 @@ public class ProgressBar : MonoBehaviour
     public Image fill;
     public Text txtSet;
 
-    public void SetMaxValue(float health)
+    public void SetMaxValue(float valueSet)
     {
-        slider.maxValue = health;
-        slider.value = health;
+        slider.maxValue = valueSet;
+        slider.value = valueSet;
 
         fill.color = gradient.Evaluate(1f);
     }
 
-    public void SetValue(float health)
+    public void SetValue(float valueSet)
     {
-        slider.value = health;
+        slider.value = valueSet;
 
         fill.color = gradient.Evaluate(slider.normalizedValue);
     }
