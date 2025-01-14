@@ -22,7 +22,7 @@ namespace Minigame.MonsterRush
         // Update is called once per frame
         void Update()
         {
-            transform.Rotate(new Vector3(0, 0, -1) * rotationSpeed * Time.deltaTime);
+            transform.Rotate(rotationSpeed * Time.deltaTime * Vector3.back);
         }
         public void SetSpeed(float setSpeed)
         {
@@ -58,7 +58,7 @@ namespace Minigame.MonsterRush
             }
 
             Instantiate(weaponPrefab, transform);
-            
+
             currentIndex = meleeWeaponControl.indexWeapon;
 
             SetPosChild();
