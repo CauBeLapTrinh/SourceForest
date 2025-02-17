@@ -85,10 +85,11 @@ namespace ThroughTheWoods
             Vector2 theScale = transform.localScale;
             theScale.x = -theScale.x;
             transform.localScale = theScale;
+            
         }
         public void Movement()
         {
-            rb.velocity = runSpeed * movement;
+            rb.linearVelocity = runSpeed * movement;
         }
         public void StopMovement()
         {

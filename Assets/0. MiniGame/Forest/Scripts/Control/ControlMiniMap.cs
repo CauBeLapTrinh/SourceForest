@@ -44,9 +44,9 @@ namespace Minigame.Forest
                     && transform.position.y <= maxY
                     && transform.position.y >= minY)
                 {
-                    rb.velocity = new Vector2(movement.x * speed, movement.y * speed);
+                    rb.linearVelocity = new Vector2(movement.x * speed, movement.y * speed);
                 }
-                else rb.velocity = Vector2.zero;
+                else rb.linearVelocity = Vector2.zero;
 
                 //rb.velocity = new Vector2(movement.x * speed, movement.y * speed);
 

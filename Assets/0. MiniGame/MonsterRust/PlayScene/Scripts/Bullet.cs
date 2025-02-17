@@ -35,7 +35,7 @@ namespace Minigame.MonsterRush
 
             direc = direction;
             speedBullet = speed;
-            rb.velocity = direc * speedBullet;
+            rb.linearVelocity = direc * speedBullet;
         }
 
         public void SetThrough()
