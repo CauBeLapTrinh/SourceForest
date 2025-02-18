@@ -984,7 +984,7 @@ namespace ScriptBoy.DiggableTerrains2D
         {
             get
             {
-                var pipeline = GraphicsSettings.renderPipelineAsset;
+                var pipeline = GraphicsSettings.defaultRenderPipeline;
                 if (pipeline != null)
                 {
                     return pipeline.GetType().Name == "UniversalRenderPipelineAsset";

@@ -93,7 +93,7 @@ namespace ThroughTheWoods
         }
         public void StopMovement()
         {
-            rb.velocity = Vector2.zero;
+            rb.linearVelocity = Vector2.zero;
         }
         public void SetCanMove(bool move)
         {
