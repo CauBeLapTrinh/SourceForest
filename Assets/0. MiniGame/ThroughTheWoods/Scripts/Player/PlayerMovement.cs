@@ -53,8 +53,8 @@ namespace ThroughTheWoods
                 movement.x = Input.GetAxisRaw("Horizontal");
                 movement.y = Input.GetAxisRaw("Vertical");
 
-                animator.SetFloat("Horizontal", movement.x);
-                animator.SetFloat("Vertical", movement.y);
+                //animator.SetFloat("Horizontal", movement.x);
+                //animator.SetFloat("Vertical", movement.y);
                 animator.SetFloat("Movement", movement.sqrMagnitude);
                 animator.SetFloat("Idle", lastMove);
 
@@ -102,6 +102,7 @@ namespace ThroughTheWoods
         public void SetLastMove(int value)
         {
             lastMove = value;
+            animator.SetFloat("Idle", lastMove);
         }
         public void SetLookDirection(LookDirection direction)
         {
@@ -110,12 +111,12 @@ namespace ThroughTheWoods
                 case LookDirection.Back:
                     animator.SetFloat("Horizontal", 0);
                     animator.SetFloat("Vertical", 1);
-                    lastMove = 2;
+                    SetLastMove(2);
                     break;
                 case LookDirection.Front:
                     animator.SetFloat("Horizontal", 0);
                     animator.SetFloat("Vertical", -1);
-                    lastMove = 0;
+                    SetLastMove(0);
                     break;
                 case LookDirection.Left:
                     animator.SetFloat("Horizontal", -1);
@@ -126,7 +127,7 @@ namespace ThroughTheWoods
                         FlipFace();
                     }
 
-                    lastMove = 1;
+                    SetLastMove(1);
                     break;
                 case LookDirection.Right:
                     animator.SetFloat("Horizontal", 1);
@@ -137,7 +138,7 @@ namespace ThroughTheWoods
                         FlipFace();
                     }
 
-                    lastMove = 1;
+                    SetLastMove(1);
                     break;
                 default:
                     break;
