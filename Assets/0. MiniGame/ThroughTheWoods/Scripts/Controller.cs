@@ -6,6 +6,17 @@ namespace ThroughTheWoods
 {
     public class Controller : MonoBehaviour
     {
+        public static Controller instance;
+        [Header("Layer")]
+        public LayerMask enemyLayer;
+        void Awake()
+        {
+            instance = this;
+        }
+        void OnDestroy()
+        {
+            instance = null;
+        }
         // Start is called before the first frame update
         void Start()
         {

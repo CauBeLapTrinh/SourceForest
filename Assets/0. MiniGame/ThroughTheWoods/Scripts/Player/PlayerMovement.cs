@@ -4,8 +4,16 @@ using UnityEngine;
 
 namespace ThroughTheWoods
 {
+    public enum LookDirection
+    {
+        Back,
+        Front,
+        Left,
+        Right
+    }
     public class PlayerMovement : MonoBehaviour
     {
+        [Header("Properties")]
         public float runSpeed;
         Rigidbody2D rb;
         Vector2 movement;
@@ -52,10 +60,6 @@ namespace ThroughTheWoods
 
                 FaceControl();
             }
-            else if (!canMove)
-            {
-                movement = Vector2.zero;
-            }
         }
         private void FixedUpdate()
         {
@@ -81,26 +85,92 @@ namespace ThroughTheWoods
             Vector2 theScale = transform.localScale;
             theScale.x = -theScale.x;
             transform.localScale = theScale;
+
         }
         public void Movement()
         {
-            rb.velocity = runSpeed * movement;
+            rb.linearVelocity = runSpeed * movement;
         }
-        public IEnumerator StopToFire()
+        public void StopMovement()
         {
-            canMove = false;
+            rb.linearVelocity = Vector2.zero;
+        }
+        public void SetCanMove(bool move)
+        {
+            canMove = move;
+        }
+        public void SetLastMove(int value)
+        {
+            lastMove = value;
+            animator.SetFloat("Idle", lastMove);
+        }
+        public float GetLastMove()
+        {
+            return lastMove;
+        }
+        public void SetLookDirection(LookDirection direction)
+        {
+            switch (direction)
+            {
+                case LookDirection.Back:
+                    animator.SetFloat("Horizontal", 0);
+                    animator.SetFloat("Vertical", 1);
+                    SetLastMove(2);
+                    if (!isFacingRight)
+                    {
+                        FlipFace();
+                    }
+                    break;
+                case LookDirection.Front:
+                    animator.SetFloat("Horizontal", 0);
+                    animator.SetFloat("Vertical", -1);
+                    SetLastMove(0);
+                    if (!isFacingRight)
+                    {
+                        FlipFace();
+                    }
+                    break;
+                case LookDirection.Left:
+                    animator.SetFloat("Horizontal", -1);
+                    animator.SetFloat("Vertical", 0);
 
-            yield return new WaitForSeconds(0.3f);
+                    if (isFacingRight)
+                    {
+                        FlipFace();
+                    }
 
-            canMove = true;
+                    SetLastMove(1);
+                    break;
+                case LookDirection.Right:
+                    animator.SetFloat("Horizontal", 1);
+                    animator.SetFloat("Vertical", 0);
+
+                    if (!isFacingRight)
+                    {
+                        FlipFace();
+                    }
+
+                    SetLastMove(1);
+                    break;
+                default:
+                    break;
+            }
         }
         public void ButtonDownMoveBack()
         {
             lastMove = 2;
+            if (!isFacingRight)
+            {
+                FlipFace();
+            }
         }
         public void ButtonDownMoveFront()
         {
             lastMove = 0;
+            if (!isFacingRight)
+            {
+                FlipFace();
+            }
         }
         public void ButtonDownMoveLeft()
         {

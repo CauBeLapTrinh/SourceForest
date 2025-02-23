@@ -17,7 +17,7 @@ namespace Minigame.Forest
 
         public void RemoveForce()
         {
-            myBody.velocity = Vector2.zero;
+            myBody.linearVelocity = Vector2.zero;
         }
 
         private void OnTriggerEnter2D(Collider2D collision)
