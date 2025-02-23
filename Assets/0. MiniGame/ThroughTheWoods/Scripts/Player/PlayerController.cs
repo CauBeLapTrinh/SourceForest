@@ -6,9 +6,14 @@ namespace ThroughTheWoods
 {
     public class PlayerController : MonoBehaviour
     {
+        Transform posAttack;
+        public Transform posAttackFront, posAttackBack, posAttackSide;
+        [Header("Properties")]
+        public float damage;
         Animator animator;
         PlayerMovement playerMovement;
         bool isAttacking = false;
+        int indexSkill = 0;
         // Start is called before the first frame update
         void Start()
         {
@@ -65,15 +70,69 @@ namespace ThroughTheWoods
 
             Attack();
         }
+        Collider2D[] enemys;
+        public void HitEnemy()
+        {
+            if (enemys.Length > 0)
+            {
+                foreach (var enemy in enemys)
+                {
+                    Enemy enemyScript = enemy.GetComponent<Enemy>();
+                    enemyScript.Hit(damage);
+                }
+            }
+        }
+        public void KinfeAttack()
+        {
+            enemys = Physics2D.OverlapBoxAll(posAttack.position, Vector2.one, 0, Controller.instance.enemyLayer);
+        }
+        public void WeaponAttack(Transform SetPosAttack)
+        {
+            posAttack = SetPosAttack;
+            switch (indexSkill)
+            {
+                case 0:
+                    KinfeAttack();
+                    break;
+                default:
+                    break;
+            }
+        }
         public void Attack()
         {
             isAttacking = true;
             animator.SetTrigger("Attack");
+
+            switch (playerMovement.GetLastMove())
+            {
+                case 0:
+                    WeaponAttack(posAttackFront);
+                    break;
+                case 1:
+                    WeaponAttack(posAttackSide);
+                    break;
+                case 2:
+                    WeaponAttack(posAttackBack);
+                    break;
+                default:
+                    break;
+            }
         }
         public void AttackEnd()
         {
             isAttacking = false;
             playerMovement.SetCanMove(true);
+        }
+        void OnDrawGizmos()
+        {
+            if (isAttacking == false || posAttack == null)
+                return;
+
+            // Đặt màu cho Gizmos
+            Gizmos.color = Color.red;
+
+            // Vẽ hình hộp (box) bằng Gizmos
+            Gizmos.DrawWireCube(posAttack.position, Vector3.one);
         }
     }
 }

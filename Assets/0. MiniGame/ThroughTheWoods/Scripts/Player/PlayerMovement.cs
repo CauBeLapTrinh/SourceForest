@@ -53,8 +53,8 @@ namespace ThroughTheWoods
                 movement.x = Input.GetAxisRaw("Horizontal");
                 movement.y = Input.GetAxisRaw("Vertical");
 
-                //animator.SetFloat("Horizontal", movement.x);
-                //animator.SetFloat("Vertical", movement.y);
+                animator.SetFloat("Horizontal", movement.x);
+                animator.SetFloat("Vertical", movement.y);
                 animator.SetFloat("Movement", movement.sqrMagnitude);
                 animator.SetFloat("Idle", lastMove);
 
@@ -85,7 +85,7 @@ namespace ThroughTheWoods
             Vector2 theScale = transform.localScale;
             theScale.x = -theScale.x;
             transform.localScale = theScale;
-            
+
         }
         public void Movement()
         {
@@ -104,6 +104,10 @@ namespace ThroughTheWoods
             lastMove = value;
             animator.SetFloat("Idle", lastMove);
         }
+        public float GetLastMove()
+        {
+            return lastMove;
+        }
         public void SetLookDirection(LookDirection direction)
         {
             switch (direction)
@@ -112,11 +116,19 @@ namespace ThroughTheWoods
                     animator.SetFloat("Horizontal", 0);
                     animator.SetFloat("Vertical", 1);
                     SetLastMove(2);
+                    if (!isFacingRight)
+                    {
+                        FlipFace();
+                    }
                     break;
                 case LookDirection.Front:
                     animator.SetFloat("Horizontal", 0);
                     animator.SetFloat("Vertical", -1);
                     SetLastMove(0);
+                    if (!isFacingRight)
+                    {
+                        FlipFace();
+                    }
                     break;
                 case LookDirection.Left:
                     animator.SetFloat("Horizontal", -1);
@@ -147,10 +159,18 @@ namespace ThroughTheWoods
         public void ButtonDownMoveBack()
         {
             lastMove = 2;
+            if (!isFacingRight)
+            {
+                FlipFace();
+            }
         }
         public void ButtonDownMoveFront()
         {
             lastMove = 0;
+            if (!isFacingRight)
+            {
+                FlipFace();
+            }
         }
         public void ButtonDownMoveLeft()
         {
