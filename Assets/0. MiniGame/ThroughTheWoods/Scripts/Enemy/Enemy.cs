@@ -26,6 +26,12 @@ namespace ThroughTheWoods
             currentHeal -= damage;
             animator.SetTrigger("Hit");
 
+            Vector2 posSpawn = transform.position + Vector3.up;
+            GameObject textHit = Instantiate(Controller.instance.textHit, posSpawn, Quaternion.identity);
+
+            TextHit scriptText = textHit.GetComponent<TextHit>();
+            scriptText.SetText($"{damage}");
+
             if (currentHeal <= 0)
             {
                 Dead();

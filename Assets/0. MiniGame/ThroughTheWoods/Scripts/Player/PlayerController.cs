@@ -8,8 +8,11 @@ namespace ThroughTheWoods
     {
         Transform posAttack;
         public Transform posAttackFront, posAttackBack, posAttackSide;
-        [Header("Properties")]
+        [Header("--- Properties ---")]
         public float damage;
+        public ProgressBar healBar;
+        public float maxHp;
+        float currentHp;
         Animator animator;
         PlayerMovement playerMovement;
         bool isAttacking = false;
@@ -19,6 +22,11 @@ namespace ThroughTheWoods
         {
             animator = GetComponent<Animator>();
             playerMovement = GetComponent<PlayerMovement>();
+
+            currentHp = maxHp;
+            healBar.SetMaxValue(maxHp);
+            healBar.SetValue(currentHp);
+            healBar.SetText($"{currentHp}/{maxHp}");
         }
 
         // Update is called once per frame
@@ -69,6 +77,23 @@ namespace ThroughTheWoods
             }
 
             Attack();
+        }
+        public void Hit(float damage)
+        {
+            currentHp -= damage;
+
+            if (currentHp <= 0)
+            {
+                currentHp = 0;
+
+                Dead();
+            }
+            healBar.SetValue(currentHp);
+            healBar.SetText($"{currentHp}/{maxHp}");
+        }
+        public void Dead()
+        {
+
         }
         Collider2D[] enemys;
         public void HitEnemy()

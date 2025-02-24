@@ -12,13 +12,19 @@ public class TextHit : MonoBehaviour
     void Start()
     {
         PlayEffect();
-        Destroy(gameObject, 1f);
+    }
+    void OnDestroy()
+    {
+        DOTween.Kill(transform);
     }
 
     public void PlayEffect()
     {
         transform.DOMoveY(transform.position.y + moveUp, 1f).SetEase(Ease.Linear);
-        textUI.DOFade(0.4f, 1f).SetEase(Ease.Linear);
+        textUI.DOFade(0.4f, 1f).SetEase(Ease.Linear).OnComplete(() =>
+        {
+            Destroy(gameObject);
+        });
     }
     public void SetText(string textSet)
     {
