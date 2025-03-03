@@ -13,9 +13,11 @@ namespace ThroughTheWoods
         bool isDead = false;
         [Header("AI Movement")]
         public float speed;
-        public float movementRadius = 3;
+        public float movementRange = 3;
         float idleTime = 2f;
         bool isFacingRight = true;
+        Vector2 limitRangeX;
+        Vector2 limitRangeY;
         Vector3 targetPosition;
         Transform targetFollow = null;
         // Start is called once before the first execution of Update after the MonoBehaviour is created
@@ -23,6 +25,9 @@ namespace ThroughTheWoods
         {
             animator = GetComponent<Animator>();
             currentHeal = maxHeal;
+            limitRangeX = new Vector2(transform.position.x - movementRange, transform.position.x + movementRange);
+            limitRangeY = new Vector2(transform.position.y - movementRange, transform.position.y + movementRange);
+            RandomTagetPos();
         }
 
         // Update is called once per frame
@@ -36,7 +41,18 @@ namespace ThroughTheWoods
             {
                 if (targetFollow != null)
                 {
-                    FollowTarget();
+                    float distanceTarget = Vector2.Distance(transform.position, targetFollow.position);
+
+                    if (distanceTarget < 3f && RangeCheck())
+                    {
+                        FollowTarget(distanceTarget);
+                    }
+                    else
+                    {
+                        targetFollow = null;
+                        idleTime = 0;
+                        RandomTagetPos();
+                    }
                 }
                 else
                 {
@@ -48,20 +64,22 @@ namespace ThroughTheWoods
                 }
             }
         }
-        public void FollowTarget()
+        public void FollowTarget(float distance)
         {
-            transform.position = Vector3.MoveTowards(transform.position, targetFollow.position, speed * Time.fixedDeltaTime);
+            FaceCheck(targetFollow.position);
+            if (distance > 0.5f)
+            {
+                animator.SetFloat("Movement", 1);
+                transform.position = Vector3.MoveTowards(transform.position, targetFollow.position, speed * Time.fixedDeltaTime);
+            }
+            else
+            {
+                animator.SetFloat("Movement", 0);
+            }
         }
         public void AutoMovement()
         {
-            if (targetPosition.x < transform.position.x && isFacingRight)
-            {
-                FaceSet(-1);
-            }
-            else if (targetPosition.x > transform.position.x && !isFacingRight)
-            {
-                FaceSet(1);
-            }
+            FaceCheck(targetPosition);
             animator.SetFloat("Movement", 1);
             transform.position = Vector3.MoveTowards(transform.position, targetPosition, speed * Time.fixedDeltaTime);
 
@@ -72,10 +90,32 @@ namespace ThroughTheWoods
                 RandomTagetPos();
             }
         }
+        public void FaceCheck(Vector2 target)
+        {
+            if (target.x < transform.position.x && isFacingRight)
+            {
+                FaceSet(-1);
+            }
+            else if (target.x > transform.position.x && !isFacingRight)
+            {
+                FaceSet(1);
+            }
+        }
+        public bool RangeCheck()
+        {
+            if (transform.position.x > limitRangeX.x && transform.position.x < limitRangeX.y)
+            {
+                if (transform.position.y > limitRangeY.x && transform.position.y < limitRangeY.y)
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
         public void RandomTagetPos()
         {
-            float rdX = Random.Range(-movementRadius, movementRadius);
-            float rdY = Random.Range(-movementRadius, movementRadius);
+            float rdX = Random.Range(limitRangeX.x, limitRangeX.y);
+            float rdY = Random.Range(limitRangeY.x, limitRangeY.y);
             targetPosition = new Vector2(rdX, rdY);
         }
         public void FaceSet(float dir)
@@ -91,6 +131,10 @@ namespace ThroughTheWoods
             Vector3 theScale = transform.localScale;
             theScale.x = dir;
             transform.localScale = theScale;
+        }
+        public void SetTargetFollow(Transform targetSet)
+        {
+            targetFollow = targetSet;
         }
         public void Hit(float damage)
         {
@@ -112,6 +156,15 @@ namespace ThroughTheWoods
         {
             isDead = true;
             animator.SetTrigger("Dead");
+        }
+        void OnDrawGizmos()
+        {
+            Gizmos.color = Color.green;
+
+            Gizmos.DrawLine(new Vector3(limitRangeX.x, limitRangeY.y), new Vector3(limitRangeX.y, limitRangeY.y));
+            Gizmos.DrawLine(new Vector3(limitRangeX.x, limitRangeY.x), new Vector3(limitRangeX.y, limitRangeY.x));
+            Gizmos.DrawLine(new Vector3(limitRangeX.y, limitRangeY.x), new Vector3(limitRangeX.y, limitRangeY.y));
+            Gizmos.DrawLine(new Vector3(limitRangeX.x, limitRangeY.x), new Vector3(limitRangeX.x, limitRangeY.y));
         }
     }
 }

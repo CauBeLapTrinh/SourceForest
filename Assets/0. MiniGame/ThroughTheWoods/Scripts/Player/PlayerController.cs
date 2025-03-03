@@ -104,6 +104,7 @@ namespace ThroughTheWoods
                 {
                     Enemy enemyScript = enemy.GetComponent<Enemy>();
                     enemyScript.Hit(damage);
+                    enemyScript.SetTargetFollow(transform);
                 }
             }
         }
