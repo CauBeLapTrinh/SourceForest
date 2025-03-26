@@ -82,6 +82,12 @@ namespace ThroughTheWoods
         {
             currentHp -= damage;
 
+            Vector2 posSpawn = transform.position + Vector3.up;
+            GameObject textHit = Instantiate(Controller.instance.textHit, posSpawn, Quaternion.identity);
+
+            TextHit scriptText = textHit.GetComponent<TextHit>();
+            scriptText.SetText($"-{damage}");
+
             if (currentHp <= 0)
             {
                 currentHp = 0;

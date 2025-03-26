@@ -6,11 +6,14 @@ namespace ThroughTheWoods
 {
     public class Enemy : MonoBehaviour
     {
-        [Header("Properties")]
+        [Header("---- Properties ----")]
         public float maxHeal;
         float currentHeal;
         Animator animator;
         bool isDead = false;
+        [Header("Attack")]
+        public float damage;
+        float delayAttack = 0;
         [Header("AI Movement")]
         public float speed;
         public float movementRange = 3;
@@ -20,6 +23,7 @@ namespace ThroughTheWoods
         Vector2 limitRangeY;
         Vector3 targetPosition;
         Transform targetFollow = null;
+
         // Start is called once before the first execution of Update after the MonoBehaviour is created
         void Start()
         {
@@ -37,30 +41,39 @@ namespace ThroughTheWoods
         }
         void FixedUpdate()
         {
+            if (delayAttack >= 0)
+            {
+                delayAttack -= Time.fixedDeltaTime;
+            }
+
             if (!isDead)
             {
-                if (targetFollow != null)
-                {
-                    float distanceTarget = Vector2.Distance(transform.position, targetFollow.position);
+                Movement();
+            }
+        }
+        public void Movement()
+        {
+            if (targetFollow != null)
+            {
+                float distanceTarget = Vector2.Distance(transform.position, targetFollow.position);
 
-                    if (distanceTarget < 3f && RangeCheck())
-                    {
-                        FollowTarget(distanceTarget);
-                    }
-                    else
-                    {
-                        targetFollow = null;
-                        idleTime = 0;
-                        RandomTagetPos();
-                    }
+                if (distanceTarget < 3f && RangeCheck())
+                {
+                    FollowTarget(distanceTarget);
                 }
                 else
                 {
-                    idleTime -= Time.fixedDeltaTime;
-                    if (idleTime <= 0)
-                    {
-                        AutoMovement();
-                    }
+                    targetFollow = null;
+                    idleTime = 0;
+                    RandomTagetPos();
+                }
+            }
+            else
+            {
+                idleTime -= Time.fixedDeltaTime;
+                if (idleTime <= 0)
+                {
+                    AutoMovement();
                 }
             }
         }
@@ -75,6 +88,7 @@ namespace ThroughTheWoods
             else
             {
                 animator.SetFloat("Movement", 0);
+                AutoAttack();
             }
         }
         public void AutoMovement()
@@ -89,6 +103,19 @@ namespace ThroughTheWoods
                 animator.SetFloat("Movement", 0);
                 RandomTagetPos();
             }
+        }
+        public void AutoAttack()
+        {
+            if (delayAttack < 0)
+            {
+                animator.SetTrigger("Attack");
+                delayAttack = 2f;
+            }
+        }
+        public void Attack()
+        {
+            PlayerController playerScript = targetFollow.GetComponent<PlayerController>();
+            playerScript.Hit(damage);
         }
         public void FaceCheck(Vector2 target)
         {
