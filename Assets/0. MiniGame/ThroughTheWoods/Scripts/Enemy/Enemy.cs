@@ -11,6 +11,7 @@ namespace ThroughTheWoods
         float currentHeal;
         Animator animator;
         bool isDead = false;
+        float timeRevive = 5f;
         [Header("Attack")]
         public float damage;
         float delayAttack = 0;
@@ -49,6 +50,14 @@ namespace ThroughTheWoods
             if (!isDead)
             {
                 Movement();
+            }
+            else
+            {
+                timeRevive -= Time.fixedDeltaTime;
+                if (timeRevive <= 0)
+                {
+                    Revive();
+                }
             }
         }
         public void Movement()
@@ -97,7 +106,7 @@ namespace ThroughTheWoods
             animator.SetFloat("Movement", 1);
             transform.position = Vector3.MoveTowards(transform.position, targetPosition, speed * Time.fixedDeltaTime);
 
-            if (transform.position == targetPosition)
+            if (Vector2.Distance(transform.position, targetPosition) < 0.1f)
             {
                 idleTime = Random.Range(3f, 4f);
                 animator.SetFloat("Movement", 0);
@@ -114,7 +123,7 @@ namespace ThroughTheWoods
         }
         public void Attack()
         {
-            PlayerController playerScript = targetFollow.GetComponent<PlayerController>();
+            SPUM_PlayerController playerScript = targetFollow.GetComponent<SPUM_PlayerController>();
             playerScript.Hit(damage);
         }
         public void FaceCheck(Vector2 target)
@@ -144,6 +153,7 @@ namespace ThroughTheWoods
             float rdX = Random.Range(limitRangeX.x, limitRangeX.y);
             float rdY = Random.Range(limitRangeY.x, limitRangeY.y);
             targetPosition = new Vector2(rdX, rdY);
+            //Debug.Log(targetPosition);
         }
         public void FaceSet(float dir)
         {
@@ -165,11 +175,13 @@ namespace ThroughTheWoods
         }
         public void Hit(float damage)
         {
+            if (isDead) return;
+
             currentHeal -= damage;
             animator.SetTrigger("Hit");
 
             Vector2 posSpawn = transform.position + Vector3.up;
-            GameObject textHit = Instantiate(Controller.instance.textHit, posSpawn, Quaternion.identity);
+            GameObject textHit = Instantiate(Controller.instance.controlPrefabs.textHit, posSpawn, Quaternion.identity);
 
             TextHit scriptText = textHit.GetComponent<TextHit>();
             scriptText.SetText($"{damage}");
@@ -183,8 +195,17 @@ namespace ThroughTheWoods
         {
             isDead = true;
             animator.SetTrigger("Dead");
+            timeRevive = 10f;
         }
-        void OnDrawGizmos()
+        public void Revive()
+        {
+            isDead = false;
+            currentHeal = maxHeal;
+            animator.SetTrigger("Revive");
+            Instantiate(Controller.instance.controlPrefabs.collectPrefab, transform.position, Quaternion.identity);
+            RandomTagetPos();
+        }
+        void OnDrawGizmosSelected()
         {
             Gizmos.color = Color.green;
 

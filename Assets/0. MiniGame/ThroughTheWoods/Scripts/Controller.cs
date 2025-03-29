@@ -10,7 +10,7 @@ namespace ThroughTheWoods
         [Header("Layer")]
         public LayerMask enemyLayer;
         [Header("Prefabs")]
-        public GameObject textHit;
+        public ControlPrefabs controlPrefabs;
         void Awake()
         {
             instance = this;
