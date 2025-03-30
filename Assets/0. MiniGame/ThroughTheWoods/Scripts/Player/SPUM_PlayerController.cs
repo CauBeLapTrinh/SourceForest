@@ -2,20 +2,23 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Events;
 namespace ThroughTheWoods
 {
-    public class SPUM_PlayerController : MonoBehaviour
+    public class SPUM_PlayerController : MonoBehaviour, IHealth
     {
         public Transform posAttack;
         [Header("--- Properties ---")]
-        public float damage;
+        [Header("Attack")]
+        public int damageDefault;
+        public int cristical;
+        [Header("Health")]
         public ProgressBar healBar;
         public float maxHp;
         float currentHp;
         SPUM_PlayerMovement playerMovement;
-
         public SPUM_Prefabs _prefabs;
         public Dictionary<PlayerState, int> IndexPair = new();
 
@@ -37,7 +40,8 @@ namespace ThroughTheWoods
             healBar.SetMaxValue(maxHp);
             healBar.SetValue(currentHp);
             healBar.SetText($"{currentHp}/{maxHp}");
-
+            Controller.instance.controlCanvasUI.healthText.text = $"{currentHp}/{maxHp}";
+            DamageUpdate(0);
             //SetStateAnimationIndex(PlayerState.ATTACK, 3);
         }
 
@@ -70,8 +74,13 @@ namespace ThroughTheWoods
                 }
             }
         }
-        Collider2D[] enemys;
+        public void DamageUpdate(int damage)
+        {
+            damageDefault += damage;
 
+            Controller.instance.controlCanvasUI.damageText.text = $"{damageDefault - 5}-{damageDefault + 5}";
+        }
+        Collider2D[] enemys;
         public IEnumerator Attack(Vector2 dir)
         {
             playerMovement.FaceControl(dir.x);
@@ -95,21 +104,40 @@ namespace ThroughTheWoods
                 foreach (var enemy in enemys)
                 {
                     Enemy enemyScript = enemy.GetComponent<Enemy>();
-                    enemyScript.Hit(damage);
                     enemyScript.SetTargetFollow(transform);
+                    Health health = enemy.GetComponent<Health>();
+                    int dame = UnityEngine.Random.Range(damageDefault - 5, damageDefault + 6);
+
+                    if (UnityEngine.Random.Range(0, 100) < cristical)
+                    {
+                        dame *= 2;
+                        health.TakeDamage(dame, true);
+                    }
+                    else
+                    {
+                        health.TakeDamage(dame, false);
+                    }
+
                 }
             }
         }
 
 
-        public void Hit(float damage)
+        public void TakeDamage(float damage, bool isCristical)
         {
             currentHp -= damage;
             Vector2 posSpawn = transform.position + Vector3.up;
             GameObject textHit = Instantiate(Controller.instance.controlPrefabs.textHit, posSpawn, Quaternion.identity);
 
             TextHit scriptText = textHit.GetComponent<TextHit>();
-            scriptText.SetText($"-{damage}");
+            if (isCristical)
+            {
+                scriptText.SetText($"-{damage}", Color.yellow);
+            }
+            else
+            {
+                scriptText.SetText($"-{damage}");
+            }
 
             PlayStateAnimation(PlayerState.DAMAGED);
 
@@ -121,6 +149,7 @@ namespace ThroughTheWoods
             }
             healBar.SetValue(currentHp);
             healBar.SetText($"{currentHp}/{maxHp}");
+            Controller.instance.controlCanvasUI.healthText.text = $"{currentHp}/{maxHp}";
         }
         public void Dead()
         {

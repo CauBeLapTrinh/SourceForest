@@ -9,8 +9,9 @@ namespace ThroughTheWoods
         public static Controller instance;
         [Header("Layer")]
         public LayerMask enemyLayer;
-        [Header("Prefabs")]
+        [Header("Control")]
         public ControlPrefabs controlPrefabs;
+        public ControlCanvasUI controlCanvasUI;
         void Awake()
         {
             instance = this;

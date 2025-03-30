@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace ThroughTheWoods
 {
-    public class Enemy : MonoBehaviour
+    public class Enemy : MonoBehaviour, IHealth
     {
         [Header("---- Properties ----")]
         public float maxHeal;
@@ -13,7 +13,7 @@ namespace ThroughTheWoods
         bool isDead = false;
         float timeRevive = 5f;
         [Header("Attack")]
-        public float damage;
+        public int damageDefault;
         float delayAttack = 0;
         [Header("AI Movement")]
         public float speed;
@@ -123,8 +123,9 @@ namespace ThroughTheWoods
         }
         public void Attack()
         {
-            SPUM_PlayerController playerScript = targetFollow.GetComponent<SPUM_PlayerController>();
-            playerScript.Hit(damage);
+            Health health = targetFollow.GetComponent<Health>();
+            int dame = Random.Range(damageDefault - 3, damageDefault + 3);
+            health.TakeDamage(dame, false);
         }
         public void FaceCheck(Vector2 target)
         {
@@ -173,7 +174,7 @@ namespace ThroughTheWoods
         {
             targetFollow = targetSet;
         }
-        public void Hit(float damage)
+        public void TakeDamage(float damage, bool isCristical)
         {
             if (isDead) return;
 
@@ -182,9 +183,15 @@ namespace ThroughTheWoods
 
             Vector2 posSpawn = transform.position + Vector3.up;
             GameObject textHit = Instantiate(Controller.instance.controlPrefabs.textHit, posSpawn, Quaternion.identity);
-
             TextHit scriptText = textHit.GetComponent<TextHit>();
-            scriptText.SetText($"{damage}");
+            if (isCristical)
+            {
+                scriptText.SetText($"-{damage}", Color.yellow);
+            }
+            else
+            {
+                scriptText.SetText($"-{damage}");
+            }
 
             if (currentHeal <= 0)
             {

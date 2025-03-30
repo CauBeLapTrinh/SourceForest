@@ -109,7 +109,7 @@ namespace ThroughTheWoods
                 foreach (var enemy in enemys)
                 {
                     Enemy enemyScript = enemy.GetComponent<Enemy>();
-                    enemyScript.Hit(damage);
+                    enemyScript.TakeDamage(damage, false);
                     enemyScript.SetTargetFollow(transform);
                 }
             }
