@@ -3,22 +3,28 @@ using UnityEngine.UI;
 
 namespace ThroughTheWoods
 {
-    public enum EControlUI
+    public enum EAttribute
     {
-        Pause,
-        Info,
-        Setting,
-        GameOver
+        Health,
+        Damage,
+        Defend
     }
     public class ControlCanvasUI : MonoBehaviour
     {
-        [Header("PauseUI")]
+        [Header("--- PauseUI ---")]
         public GameObject panelPause;
-        [Header("InfoUI")]
+        [Header("--- InfoUI ---")]
         public GameObject panelInfo;
         public Text healthText;
         public Text damageText;
-        public Text defendText;
+        public Text cristicalText;
+        [Header("- Attribute")]
+        public Text attributeCountText;
+        public Text attributeHealthText;
+        public Text attributeDamageText;
+        public Text attributeCristicalText;
+        [Header("- CharacterBar")]
+        public Text levelText;
         // Start is called once before the first execution of Update after the MonoBehaviour is created
         public void OnPanelUI(int index)
         {
@@ -45,6 +51,25 @@ namespace ThroughTheWoods
                     break;
                 case 1:
                     panelInfo.SetActive(false);
+                    break;
+                default:
+                    break;
+            }
+        }
+        public void PlusAttribute(EAttribute attributeSet, int attributeCount, int valueSet)
+        {
+            attributeCountText.text = $"{attributeCount}";
+
+            switch (attributeSet)
+            {
+                case EAttribute.Health:
+                    attributeHealthText.text = $"{valueSet}";
+                    break;
+                case EAttribute.Damage:
+                    attributeDamageText.text = $"{valueSet}";
+                    break;
+                case EAttribute.Defend:
+                    attributeCristicalText.text = $"{valueSet}";
                     break;
                 default:
                     break;
