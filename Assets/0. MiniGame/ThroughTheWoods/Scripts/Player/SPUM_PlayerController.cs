@@ -51,8 +51,10 @@ namespace ThroughTheWoods
                 IndexPair[state] = 0;
             }
 
+            expBar.SetMaxValue(GetExpToNextLevel());
+            expBar.SetValue(curExp);
+
             LoadCharacterBar();
-            LoadInfoUI();
             //SetStateAnimationIndex(PlayerState.ATTACK, 3);
         }
 
@@ -70,7 +72,7 @@ namespace ThroughTheWoods
         void Update()
         {
             // Kiểm tra nếu người chơi click chuột
-            if (Input.GetMouseButtonDown(0)) // 0 là nút chuột trái
+            if (Input.GetMouseButtonDown(0) && !Controller.instance.controlCanvasUI.isOncanvas) // 0 là nút chuột trái
             {
                 // Lấy vị trí click chuột trong thế giới game
                 Vector3 mousePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
@@ -87,6 +89,7 @@ namespace ThroughTheWoods
 
             RecoveryHp();
             RecoveryMp();
+            LoadInfoUI();
         }
 
         Collider2D[] enemys;
@@ -122,21 +125,82 @@ namespace ThroughTheWoods
                 {
                     Enemy enemyScript = enemy.GetComponent<Enemy>();
                     enemyScript.SetTargetFollow(transform);
+                    if (enemyScript.IsDead()) break;
                     Health health = enemy.GetComponent<Health>();
-                    int dame = UnityEngine.Random.Range(damageDefault - 5, damageDefault + 6);
+                    int damage = UnityEngine.Random.Range(damageDefault - 5, damageDefault + 6);
 
-                    if (UnityEngine.Random.Range(0, 100) < cristical)
+                    bool isCritical = UnityEngine.Random.Range(0, 100) < cristical;
+                    if (isCritical)
                     {
-                        dame *= 2;
-                        health.TakeDamage(dame, true);
+                        damage *= 2;
+                        health.TakeDamage(damage, true);
                     }
                     else
                     {
-                        health.TakeDamage(dame, false);
+                        health.TakeDamage(damage, false);
                     }
 
+                    // Tính toán EXP dựa trên damage gây ra
+                    int expGained = CalculateExp(damage);
+                    GainExp(expGained);
                 }
             }
+        }
+
+        private int CalculateExp(int damage)
+        {
+            int baseExp = damage / 2; // Lượng EXP cơ bản dựa trên damage
+            return baseExp;
+        }
+
+        private void GainExp(int exp)
+        {
+            curExp += exp;
+            expBar.SetValue(curExp);
+            Vector2 posSpawn = transform.position + Vector3.up;
+            GameObject textHit = Instantiate(Controller.instance.controlPrefabs.textHit, posSpawn, Quaternion.identity);
+            TextHit scriptText = textHit.GetComponent<TextHit>();
+            scriptText.SetText($"+{exp}", Color.green);
+
+            // Kiểm tra nếu đủ EXP để lên cấp
+            if (curExp >= GetExpToNextLevel())
+            {
+                LevelUp();
+            }
+        }
+
+        private int GetExpToNextLevel()
+        {
+            return curLevel * 100; // Ví dụ: mỗi cấp độ cần 100 * cấp độ EXP
+        }
+
+        private void LevelUp()
+        {
+            curLevel += 1; // Tăng cấp độ
+            curExp = 0; // Reset EXP sau khi lên cấp
+            maxHp += 10; // Tăng máu tối đa
+            maxMp += 5; // Tăng mana tối đa
+            AttributeUpdate(1);
+
+            // Hồi đầy máu và mana
+            currentHp = maxHp;
+            currentMp = maxMp;
+
+            // Cập nhật giao diện
+            healBar.SetMaxValue(maxHp);
+            healBar.SetValue(currentHp);
+            healBar.SetText($"{currentHp}/{maxHp}");
+
+            mpBar.SetMaxValue(maxMp);
+            mpBar.SetValue(currentMp);
+            mpBar.SetText($"{currentMp}/{maxMp}");
+
+            expBar.SetMaxValue(GetExpToNextLevel());
+            expBar.SetValue(curExp);
+
+            Controller.instance.controlCanvasUI.levelText.text = $"Level: {curLevel}";
+
+            Debug.Log($"Level Up! Current Level: {curLevel}");
         }
         public void TakeDamage(float damage, bool isCristical)
         {
@@ -218,10 +282,16 @@ namespace ThroughTheWoods
         }
         public void LoadInfoUI()
         {
-            Controller.instance.controlCanvasUI.attributeCountText.text = $"{attributeCount}";
+            AttributeUpdate(0);
             HealUpdate(0);
             DamageUpdate(0);
             CristicalUpdate(0);
+        }
+        public void AttributeUpdate(int count)
+        {
+            attributeCount += count;
+
+            Controller.instance.controlCanvasUI.attributeCountText.text = $"{attributeCount}";
         }
         public void HealUpdate(int heal)
         {

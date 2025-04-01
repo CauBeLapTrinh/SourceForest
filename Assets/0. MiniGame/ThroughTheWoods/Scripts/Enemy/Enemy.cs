@@ -198,6 +198,10 @@ namespace ThroughTheWoods
                 Dead();
             }
         }
+        public bool IsDead()
+        {
+            return isDead;
+        }
         public void Dead()
         {
             isDead = true;

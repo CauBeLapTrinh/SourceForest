@@ -11,6 +11,7 @@ namespace ThroughTheWoods
     }
     public class ControlCanvasUI : MonoBehaviour
     {
+        public bool isOncanvas = false;
         [Header("--- PauseUI ---")]
         public GameObject panelPause;
         [Header("--- InfoUI ---")]
@@ -28,6 +29,7 @@ namespace ThroughTheWoods
         // Start is called once before the first execution of Update after the MonoBehaviour is created
         public void OnPanelUI(int index)
         {
+            isOncanvas = true;
             switch (index)
             {
                 case 0:
@@ -43,6 +45,7 @@ namespace ThroughTheWoods
         }
         public void OffPanelUI(int index)
         {
+            isOncanvas = false;
             switch (index)
             {
                 case 0:
