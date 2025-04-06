@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -26,6 +27,8 @@ namespace ThroughTheWoods
         public Text attributeCristicalText;
         [Header("- CharacterBar")]
         public Text levelText;
+        [Header("--- Skill ---")]
+        public List<Image> skillImages;
         // Start is called once before the first execution of Update after the MonoBehaviour is created
         public void OnPanelUI(int index)
         {
@@ -76,6 +79,19 @@ namespace ThroughTheWoods
                     break;
                 default:
                     break;
+            }
+        }
+        public void ResetSkillUI()
+        {
+            foreach (var img in skillImages)
+            {
+                Color currentColor = img.color;
+
+                // Thay đổi alpha thành 0 (trong suốt)
+                currentColor.a = 0f;
+
+                // Gán lại màu mới cho Image
+                img.color = currentColor;
             }
         }
     }

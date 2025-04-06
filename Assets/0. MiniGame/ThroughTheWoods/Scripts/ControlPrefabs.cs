@@ -4,6 +4,7 @@ namespace ThroughTheWoods
 {
     public class ControlPrefabs : MonoBehaviour
     {
+        public GameObject arrowPrefab;
         public GameObject collectPrefab;
         public GameObject textHit;
 

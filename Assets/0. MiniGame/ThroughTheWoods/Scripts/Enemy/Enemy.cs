@@ -7,6 +7,7 @@ namespace ThroughTheWoods
     public class Enemy : MonoBehaviour, IHealth
     {
         [Header("---- Properties ----")]
+        public MonsterType monsterType;
         public float maxHeal;
         float currentHeal;
         Animator animator;
@@ -206,6 +207,7 @@ namespace ThroughTheWoods
         {
             isDead = true;
             animator.SetTrigger("Dead");
+            Controller.instance.missionManager.OnMonsterKilled(monsterType);
             timeRevive = 10f;
         }
         public void Revive()

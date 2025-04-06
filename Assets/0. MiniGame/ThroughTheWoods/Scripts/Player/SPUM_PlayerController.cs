@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using JetBrains.Annotations;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Events;
@@ -18,6 +19,9 @@ namespace ThroughTheWoods
         int curAttributeHeal = 0;
         int curAttributeDamage = 0;
         int curAttributeCristical = 0;
+        public SpriteRenderer weaponSprite;
+        SkillUI skillUI;
+        int weaponIndex;
         [Header("Health")]
         public ProgressBar healBar;
         public float maxHp;
@@ -56,6 +60,7 @@ namespace ThroughTheWoods
 
             LoadCharacterBar();
             //SetStateAnimationIndex(PlayerState.ATTACK, 3);
+            Controller.instance.SetSkillUI(0);
         }
 
         public void SetStateAnimationIndex(PlayerState state, int index = 0)
@@ -79,11 +84,11 @@ namespace ThroughTheWoods
                 mousePosition.z = 0; // Đảm bảo z = 0 để không ảnh hưởng đến 2D
 
                 // Tính vector hướng từ nhân vật đến vị trí click chuột
-                Vector2 direction = (mousePosition - transform.position).normalized;
+                //Vector2 direction = (mousePosition - transform.position).normalized;
 
                 if (!playerMovement.isAction)
                 {
-                    StartCoroutine(Attack(direction));
+                    Attack(mousePosition);
                 }
             }
 
@@ -91,33 +96,98 @@ namespace ThroughTheWoods
             RecoveryMp();
             LoadInfoUI();
         }
+        public void SetWeaponSprite(int indexWeapon, SkillUI skillUISet)
+        {
+            weaponIndex = indexWeapon;
+            skillUI = skillUISet;
+            SetStateAnimationIndex(PlayerState.ATTACK, indexWeapon);
+            weaponSprite.sprite = skillUI.skillSprite;
+        }
 
         Collider2D[] enemys;
-        public IEnumerator Attack(Vector2 dir)
+        public void Attack(Vector3 mousePosition)
         {
-            if (currentMp < 10)
+            int damage = UnityEngine.Random.Range(damageDefault - 5, damageDefault + 6);
+
+            bool isCritical = UnityEngine.Random.Range(0, 100) < cristical;
+            if (isCritical)
+            {
+                damage *= 2;
+            }
+
+            switch (weaponIndex)
+            {
+                case 0:
+                    StartCoroutine(Attack1(damage, isCritical, mousePosition));
+                    break;
+                case 3:
+                    StartCoroutine(Attack2(damage, isCritical, mousePosition));
+                    break;
+                default:
+                    break;
+            }
+        }
+        public IEnumerator Attack1(int damage, bool isCristical, Vector3 mousePosition)
+        {
+            if (currentMp < 10 || skillUI.IsDelayActive())
             {
                 yield break;
             }
+
+            skillUI.StartDelay(0.5f);
             currentMp -= 10;
             mpBar.SetValue(currentMp);
             mpBar.SetText($"{currentMp}/{maxMp}");
-
-            playerMovement.FaceControl(dir.x);
+            Vector2 direction = (mousePosition - transform.position).normalized;
+            playerMovement.FaceControl(direction.x);
             playerMovement.isAction = true;
             playerMovement.StopMovement();
             PlayStateAnimation(PlayerState.ATTACK);
             enemys = Physics2D.OverlapBoxAll(posAttack.position, Vector2.one, 0, Controller.instance.enemyLayer);
             yield return new WaitForSeconds(0.2f);
-            HitEnemy();
+            HitEnemy(damage, isCristical);
             yield return new WaitForSeconds(0.2f);
             EndActionAttack();
         }
+        public IEnumerator Attack2(int damage, bool isCristical, Vector3 mousePosition)
+        {
+            if (currentMp < 15 || skillUI.IsDelayActive())
+            {
+                yield break;
+            }
+
+            skillUI.StartDelay(0.8f);
+            currentMp -= 15;
+            mpBar.SetValue(currentMp);
+            mpBar.SetText($"{currentMp}/{maxMp}");
+            Vector2 direction = (mousePosition - transform.position).normalized;
+            playerMovement.FaceControl(direction.x);
+            playerMovement.isAction = true;
+            playerMovement.StopMovement();
+            PlayStateAnimation(PlayerState.ATTACK);
+            yield return new WaitForSeconds(0.3f);
+            CreateArrow(damage, isCristical, mousePosition);
+            yield return new WaitForSeconds(0.2f);
+            EndActionAttack();
+        }
+        public void CreateArrow(int damage, bool isCristical, Vector3 mousePosition)
+        {
+            Vector2 direction = (mousePosition - posAttack.position).normalized;
+            float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg - 90f;
+            GameObject arrow = Instantiate(Controller.instance.controlPrefabs.arrowPrefab, posAttack.position, Quaternion.Euler(0, 0, angle));
+            Physics2D.IgnoreCollision(arrow.GetComponent<Collider2D>(), GetComponent<Collider2D>());
+            Arrow arrowScript = arrow.GetComponent<Arrow>();
+            arrowScript.SetDamage(damage, isCristical);
+            arrowScript.SetRootPlayer(this);
+            Rigidbody2D rb = arrow.GetComponent<Rigidbody2D>();
+            rb.AddForce(direction * 12f, ForceMode2D.Impulse);
+        }
+
         public void EndActionAttack()
         {
             playerMovement.isAction = false;
         }
-        public void HitEnemy()
+        public void HitEnemy(int damage, bool isCristical)
         {
             if (enemys.Length > 0)
             {
@@ -127,22 +197,10 @@ namespace ThroughTheWoods
                     enemyScript.SetTargetFollow(transform);
                     if (enemyScript.IsDead()) break;
                     Health health = enemy.GetComponent<Health>();
-                    int damage = UnityEngine.Random.Range(damageDefault - 5, damageDefault + 6);
 
-                    bool isCritical = UnityEngine.Random.Range(0, 100) < cristical;
-                    if (isCritical)
-                    {
-                        damage *= 2;
-                        health.TakeDamage(damage, true);
-                    }
-                    else
-                    {
-                        health.TakeDamage(damage, false);
-                    }
+                    health.TakeDamage(damage, isCristical);
 
-                    // Tính toán EXP dựa trên damage gây ra
-                    int expGained = CalculateExp(damage);
-                    GainExp(expGained);
+                    GainExp(damage);
                 }
             }
         }
@@ -153,14 +211,16 @@ namespace ThroughTheWoods
             return baseExp;
         }
 
-        private void GainExp(int exp)
+        public void GainExp(int damage)
         {
-            curExp += exp;
+            int expGained = CalculateExp(damage);
+
+            curExp += expGained;
             expBar.SetValue(curExp);
             Vector2 posSpawn = transform.position + Vector3.up;
             GameObject textHit = Instantiate(Controller.instance.controlPrefabs.textHit, posSpawn, Quaternion.identity);
             TextHit scriptText = textHit.GetComponent<TextHit>();
-            scriptText.SetText($"+{exp}", Color.green);
+            scriptText.SetText($"+{expGained}", Color.green);
 
             // Kiểm tra nếu đủ EXP để lên cấp
             if (curExp >= GetExpToNextLevel())
@@ -180,6 +240,8 @@ namespace ThroughTheWoods
             curExp = 0; // Reset EXP sau khi lên cấp
             maxHp += 10; // Tăng máu tối đa
             maxMp += 5; // Tăng mana tối đa
+            damageDefault += 3; // Tăng sát thương cơ bản
+            cristical += 1; // Tăng tỉ lệ chí mạng
             AttributeUpdate(1);
 
             // Hồi đầy máu và mana
@@ -296,7 +358,9 @@ namespace ThroughTheWoods
         public void HealUpdate(int heal)
         {
             maxHp += heal;
-
+            healBar.SetMaxValue(maxHp);
+            healBar.SetValue(currentHp);
+            healBar.SetText($"{currentHp}/{maxHp}");
             Controller.instance.controlCanvasUI.healthText.text = $"{currentHp}/{maxHp}";
         }
         public void DamageUpdate(int damage)
@@ -338,7 +402,7 @@ namespace ThroughTheWoods
             Controller.instance.controlCanvasUI.PlusAttribute(EAttribute.Defend, attributeCount, curAttributeCristical);
             CristicalUpdate(3);
         }
-        void OnDrawGizmos()
+        void OnDrawGizmosSelected()
         {
             if (posAttack == null)
                 return;
