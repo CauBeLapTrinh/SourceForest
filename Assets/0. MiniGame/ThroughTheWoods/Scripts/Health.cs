@@ -5,6 +5,7 @@ namespace ThroughTheWoods
     public interface IHealth
     {
         void TakeDamage(float damage, bool isCristical = false);
+        bool IsDead();
         // void Heal(float amount);
         // float GetCurrentHealth();
         // float GetMaxHealth();
@@ -23,6 +24,10 @@ namespace ThroughTheWoods
         public void TakeDamage(float damage, bool isCristical)
         {
             rootHealth.TakeDamage(damage, isCristical);
+        }
+        public bool IsDead()
+        {
+            return rootHealth.IsDead();
         }
     }
 }

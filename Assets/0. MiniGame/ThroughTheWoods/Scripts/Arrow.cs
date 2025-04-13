@@ -23,15 +23,14 @@ namespace ThroughTheWoods
         {
             if (collision.CompareTag("Enemy"))
             {
-                Enemy enemyScript = collision.GetComponent<Enemy>();
-                enemyScript.SetTargetFollow(rootPlayer.transform);
-                if (!enemyScript.IsDead())
+                IEnemyTarget enemyI = collision.GetComponent<IEnemyTarget>();
+                enemyI.SetTargetFollow(rootPlayer.transform);
+                Health health = collision.GetComponent<Health>();
+                if (!health.IsDead())
                 {
-                    if (collision.TryGetComponent<Health>(out var enemy))
-                    {
-                        enemy.TakeDamage(damage, isCristical);
-                        rootPlayer.GainExp(damage);
-                    }
+                    health.TakeDamage(damage, isCristical);
+                    rootPlayer.CalculateDamage(damage);
+
                     Destroy(gameObject);
                 }
             }

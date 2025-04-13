@@ -1,53 +1,90 @@
-using Unity.VisualScripting;
-using Unity.VisualScripting.FullSerializer;
+using System;
+using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace ThroughTheWoods
 {
-    public class Enemy : MonoBehaviour, IHealth, IEnemyTarget
+    public interface IEnemyTarget
     {
+        void SetTargetFollow(Transform targetSet);
+    }
+    [Serializable]
+    public class ItemDrop
+    {
+        public GameObject[] itemPrefab;
+        public int dropRate;
+    }
+    public class SPUM_Enemy : MonoBehaviour, IHealth, IEnemyTarget
+    {
+        [Header("---- Item drop ----")]
+        public ItemDrop[] itemDrops;
+
         [Header("---- Properties ----")]
         public MonsterType monsterType;
         public float maxHeal;
         float currentHeal;
-        Animator animator;
+        //Animator animator;
         bool isDead = false;
         float timeRevive = 5f;
         [Header("Attack")]
         public int damageDefault;
-        float delayAttack = 0;
+        [HideInInspector] public bool isAttack = false;
         [Header("AI Movement")]
+        public float movement;
         public float speed;
         public float movementRange = 3;
         float idleTime = 2f;
-        bool isFacingRight = true;
+        bool isFacingRight = false;
         Vector2 limitRangeX;
         Vector2 limitRangeY;
         Vector3 targetPosition;
-        Transform targetFollow = null;
-
-        // Start is called once before the first execution of Update after the MonoBehaviour is created
-        void Start()
+        [HideInInspector] public Transform targetFollow = null;
+        [Header("SPUM")]
+        public SPUM_Prefabs _prefabs;
+        private PlayerState _currentState;
+        public bool isAction = false;
+        public Dictionary<PlayerState, int> IndexPair = new();
+        public virtual void Start()
         {
-            animator = GetComponent<Animator>();
+            if (_prefabs == null)
+            {
+                _prefabs = transform.GetChild(0).GetComponent<SPUM_Prefabs>();
+                if (!_prefabs.allListsHaveItemsExist())
+                {
+                    _prefabs.PopulateAnimationLists();
+                }
+            }
+            _prefabs.OverrideControllerInit();
+            foreach (PlayerState state in Enum.GetValues(typeof(PlayerState)))
+            {
+                IndexPair[state] = 0;
+            }
+
             currentHeal = maxHeal;
             limitRangeX = new Vector2(transform.position.x - movementRange, transform.position.x + movementRange);
             limitRangeY = new Vector2(transform.position.y - movementRange, transform.position.y + movementRange);
             RandomTagetPos();
         }
 
-        // Update is called once per frame
-        void Update()
+        public void SetStateAnimationIndex(PlayerState state, int index = 0)
         {
-            //animator.SetFloat("Movement", 0);
+            IndexPair[state] = index;
         }
-        void FixedUpdate()
-        {
-            if (delayAttack >= 0)
-            {
-                delayAttack -= Time.fixedDeltaTime;
-            }
 
+        public void PlayStateAnimation(PlayerState state)
+        {
+            _prefabs.PlayAnimation(state, IndexPair[state]);
+        }
+
+        // Update is called once per frame
+        public virtual void Update()
+        {
+
+        }
+
+        public virtual void FixedUpdate()
+        {
             if (!isDead)
             {
                 Movement();
@@ -60,6 +97,28 @@ namespace ThroughTheWoods
                     Revive();
                 }
             }
+
+            if (isAction) return;
+
+            if (movement < 0.1f)
+            {
+                _currentState = PlayerState.IDLE;
+            }
+            else
+            {
+                _currentState = PlayerState.MOVE;
+            }
+
+            switch (_currentState)
+            {
+                case PlayerState.IDLE:
+                    //StopMovement();
+                    break;
+                case PlayerState.MOVE:
+                    //Movement();
+                    break;
+            }
+            PlayStateAnimation(_currentState);
         }
         public void Movement()
         {
@@ -73,6 +132,7 @@ namespace ThroughTheWoods
                 }
                 else
                 {
+                    isAttack = false;
                     targetFollow = null;
                     idleTime = 0;
                     RandomTagetPos();
@@ -90,43 +150,31 @@ namespace ThroughTheWoods
         public void FollowTarget(float distance)
         {
             FaceCheck(targetFollow.position);
-            if (distance > 0.5f)
+
+            if (distance > 0.8f)
             {
-                animator.SetFloat("Movement", 1);
+                movement = 1;
                 transform.position = Vector3.MoveTowards(transform.position, targetFollow.position, speed * Time.fixedDeltaTime);
+
             }
             else
             {
-                animator.SetFloat("Movement", 0);
-                AutoAttack();
+                movement = 0;
+                isAttack = true;
             }
         }
         public void AutoMovement()
         {
             FaceCheck(targetPosition);
-            animator.SetFloat("Movement", 1);
+            movement = 1;
             transform.position = Vector3.MoveTowards(transform.position, targetPosition, speed * Time.fixedDeltaTime);
 
             if (Vector2.Distance(transform.position, targetPosition) < 0.1f)
             {
-                idleTime = Random.Range(3f, 4f);
-                animator.SetFloat("Movement", 0);
+                idleTime = UnityEngine.Random.Range(3f, 4f);
+                movement = 0;
                 RandomTagetPos();
             }
-        }
-        public void AutoAttack()
-        {
-            if (delayAttack < 0)
-            {
-                animator.SetTrigger("Attack");
-                delayAttack = 2f;
-            }
-        }
-        public void Attack()
-        {
-            Health health = targetFollow.GetComponent<Health>();
-            int dame = Random.Range(damageDefault - 3, damageDefault + 3);
-            health.TakeDamage(dame, false);
         }
         public void FaceCheck(Vector2 target)
         {
@@ -152,8 +200,8 @@ namespace ThroughTheWoods
         }
         public void RandomTagetPos()
         {
-            float rdX = Random.Range(limitRangeX.x, limitRangeX.y);
-            float rdY = Random.Range(limitRangeY.x, limitRangeY.y);
+            float rdX = UnityEngine.Random.Range(limitRangeX.x, limitRangeX.y);
+            float rdY = UnityEngine.Random.Range(limitRangeY.x, limitRangeY.y);
             targetPosition = new Vector2(rdX, rdY);
             //Debug.Log(targetPosition);
         }
@@ -180,8 +228,8 @@ namespace ThroughTheWoods
             if (isDead) return;
 
             currentHeal -= damage;
-            animator.SetTrigger("Hit");
-
+            //animator.SetTrigger("Hit");
+            PlayStateAnimation(PlayerState.DAMAGED);
             Vector2 posSpawn = transform.position + Vector3.up;
             GameObject textHit = Instantiate(Controller.instance.controlPrefabs.textHit, posSpawn, Quaternion.identity);
             TextHit scriptText = textHit.GetComponent<TextHit>();
@@ -205,22 +253,65 @@ namespace ThroughTheWoods
         }
         public void Dead()
         {
+            isAttack = false;
             isDead = true;
-            animator.SetTrigger("Dead");
+            PlayStateAnimation(PlayerState.DEATH);
+            DropItems();
             Controller.instance.missionManager.OnMonsterKilled(monsterType);
             timeRevive = 10f;
+        }
+        private void DropItems()
+        {
+            if (itemDrops.Length == 0) return; // Không có item nào để rơi
+            int cumulativeRate = 0; // Tỷ lệ tích lũy
+            List<(int min, int max, ItemDrop itemDrop)> dropRanges = new();
+
+            // Tính toán phạm vi tỷ lệ cho từng ItemDrop
+            foreach (var itemDrop in itemDrops)
+            {
+                int min = cumulativeRate + 1;
+                int max = cumulativeRate + itemDrop.dropRate;
+                cumulativeRate = max;
+
+                dropRanges.Add((min, max, itemDrop));
+            }
+
+            // Random một số trong khoảng từ 1 đến tổng tỷ lệ
+            int randomChance = UnityEngine.Random.Range(1, 101);
+
+            // Tìm ItemDrop tương ứng với số random
+            foreach (var range in dropRanges)
+            {
+                if (randomChance >= range.min && randomChance <= range.max)
+                {
+                    // Chọn ngẫu nhiên một itemPrefab từ ItemDrop đã chọn
+                    if (range.itemDrop.itemPrefab.Length > 0)
+                    {
+                        GameObject itemToDrop = range.itemDrop.itemPrefab[UnityEngine.Random.Range(0, range.itemDrop.itemPrefab.Length)];
+
+                        // Tạo item tại vị trí của quái vật
+                        Instantiate(itemToDrop, transform.position, Quaternion.identity);
+                    }
+                    return; // Chỉ rơi một loại item, thoát khỏi hàm
+                }
+            }
         }
         public void Revive()
         {
             isDead = false;
             currentHeal = maxHeal;
-            animator.SetTrigger("Revive");
+            _prefabs._anim.SetTrigger("Revive");
             Instantiate(Controller.instance.controlPrefabs.collectPrefab, transform.position, Quaternion.identity);
             RandomTagetPos();
         }
         void OnDrawGizmosSelected()
         {
             Gizmos.color = Color.green;
+            if (!Application.isPlaying)
+            {
+                limitRangeX = new Vector2(transform.position.x - movementRange, transform.position.x + movementRange);
+                limitRangeY = new Vector2(transform.position.y - movementRange, transform.position.y + movementRange);
+            }
 
             Gizmos.DrawLine(new Vector3(limitRangeX.x, limitRangeY.y), new Vector3(limitRangeX.y, limitRangeY.y));
             Gizmos.DrawLine(new Vector3(limitRangeX.x, limitRangeY.x), new Vector3(limitRangeX.y, limitRangeY.x));
@@ -229,4 +320,3 @@ namespace ThroughTheWoods
         }
     }
 }
-

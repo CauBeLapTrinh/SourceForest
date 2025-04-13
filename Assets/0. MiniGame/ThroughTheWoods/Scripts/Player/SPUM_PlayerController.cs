@@ -3,19 +3,37 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using JetBrains.Annotations;
+using ScriptBoy.DiggableTerrains2D_Demos;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Events;
 namespace ThroughTheWoods
 {
+    public class PlayerData
+    {
+        public int damageDefault;
+        public int cristical;
+        public int attributeCount = 0;
+        public int curAttributeHeal = 0;
+        public int curAttributeDamage = 0;
+        public int curAttributeCristical = 0;
+        public int curLevel;
+        public int curExp;
+        public float maxHp;
+        public float currentHp;
+        public float maxMp;
+        public float currentMp;
+        public Vector3 position;
+    }
     public class SPUM_PlayerController : MonoBehaviour, IHealth
     {
         public Transform posAttack;
+        PlayerData playerData = new();
         [Header("--- Properties ---")]
         [Header("Attack")]
         public int damageDefault;
         public int cristical;
-        int attributeCount = 5;
+        int attributeCount = 0;
         int curAttributeHeal = 0;
         int curAttributeDamage = 0;
         int curAttributeCristical = 0;
@@ -27,6 +45,7 @@ namespace ThroughTheWoods
         public float maxHp;
         float currentHp;
         float delayRecoveryHp = 1f;
+        bool isDead = false;
         [Header("Mana")]
         public ProgressBar mpBar;
         public float maxMp;
@@ -55,10 +74,6 @@ namespace ThroughTheWoods
                 IndexPair[state] = 0;
             }
 
-            expBar.SetMaxValue(GetExpToNextLevel());
-            expBar.SetValue(curExp);
-
-            LoadCharacterBar();
             //SetStateAnimationIndex(PlayerState.ATTACK, 3);
             Controller.instance.SetSkillUI(0);
         }
@@ -77,7 +92,7 @@ namespace ThroughTheWoods
         void Update()
         {
             // Kiểm tra nếu người chơi click chuột
-            if (Input.GetMouseButtonDown(0) && !Controller.instance.controlCanvasUI.isOncanvas) // 0 là nút chuột trái
+            if (Input.GetMouseButtonDown(0) && !Controller.instance.controlCanvasUI.IsOncanvas()) // 0 là nút chuột trái
             {
                 // Lấy vị trí click chuột trong thế giới game
                 Vector3 mousePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
@@ -91,10 +106,48 @@ namespace ThroughTheWoods
                     Attack(mousePosition);
                 }
             }
-
+            SaveCurrentData();
             RecoveryHp();
             RecoveryMp();
             LoadInfoUI();
+        }
+        public PlayerData GetPlayerData()
+        {
+            return playerData;
+        }
+        public void SaveCurrentData()
+        {
+            playerData.damageDefault = damageDefault;
+            playerData.cristical = cristical;
+            playerData.attributeCount = attributeCount;
+            playerData.curAttributeHeal = curAttributeHeal;
+            playerData.curAttributeDamage = curAttributeDamage;
+            playerData.curAttributeCristical = curAttributeCristical;
+            playerData.curLevel = curLevel;
+            playerData.curExp = curExp;
+            playerData.maxHp = maxHp;
+            playerData.currentHp = currentHp;
+            playerData.maxMp = maxMp;
+            playerData.currentMp = currentMp;
+            playerData.position = transform.position;
+        }
+        public void LoadData(PlayerData data)
+        {
+            damageDefault = data.damageDefault;
+            cristical = data.cristical;
+            attributeCount = data.attributeCount;
+            curAttributeHeal = data.curAttributeHeal;
+            curAttributeDamage = data.curAttributeDamage;
+            curAttributeCristical = data.curAttributeCristical;
+            curLevel = data.curLevel;
+            curExp = data.curExp;
+            maxHp = data.maxHp;
+            currentHp = data.currentHp;
+            maxMp = data.maxMp;
+            currentMp = data.currentMp;
+            transform.position = data.position;
+            // Cập nhật giao diện
+            LoadCharacterBar();
         }
         public void SetWeaponSprite(int indexWeapon, SkillUI skillUISet)
         {
@@ -193,14 +246,13 @@ namespace ThroughTheWoods
             {
                 foreach (var enemy in enemys)
                 {
-                    Enemy enemyScript = enemy.GetComponent<Enemy>();
-                    enemyScript.SetTargetFollow(transform);
-                    if (enemyScript.IsDead()) break;
+                    IEnemyTarget enemyI = enemy.GetComponent<IEnemyTarget>();
+                    enemyI.SetTargetFollow(transform);
                     Health health = enemy.GetComponent<Health>();
-
+                    if (health.IsDead()) break;
                     health.TakeDamage(damage, isCristical);
 
-                    GainExp(damage);
+                    CalculateDamage(damage);
                 }
             }
         }
@@ -210,11 +262,14 @@ namespace ThroughTheWoods
             int baseExp = damage / 2; // Lượng EXP cơ bản dựa trên damage
             return baseExp;
         }
-
-        public void GainExp(int damage)
+        public void CalculateDamage(int damage)
         {
             int expGained = CalculateExp(damage);
+            GainExp(expGained);
+        }
 
+        public void GainExp(int expGained)
+        {
             curExp += expGained;
             expBar.SetValue(curExp);
             Vector2 posSpawn = transform.position + Vector3.up;
@@ -227,6 +282,27 @@ namespace ThroughTheWoods
             {
                 LevelUp();
             }
+        }
+        public void Healing(int amount)
+        {
+            currentHp = Mathf.Min(currentHp + amount, maxHp);
+            healBar.SetValue(currentHp);
+            healBar.SetText($"{currentHp}/{maxHp}");
+            Vector2 posSpawn = transform.position + Vector3.up;
+            GameObject textHp = Instantiate(Controller.instance.controlPrefabs.textHit, posSpawn, Quaternion.identity);
+            TextHit scriptText = textHp.GetComponent<TextHit>();
+            scriptText.SetText($"+{amount}", Color.red);
+        }
+
+        public void RestoreMana(int amount)
+        {
+            currentMp = Mathf.Min(currentMp + amount, maxMp);
+            mpBar.SetValue(currentMp);
+            mpBar.SetText($"{currentMp}/{maxMp}");
+            Vector2 posSpawn = transform.position + Vector3.up;
+            GameObject textMp = Instantiate(Controller.instance.controlPrefabs.textHit, posSpawn, Quaternion.identity);
+            TextHit scriptText = textMp.GetComponent<TextHit>();
+            scriptText.SetText($"+{amount}", Color.blue);
         }
 
         private int GetExpToNextLevel()
@@ -292,6 +368,10 @@ namespace ThroughTheWoods
             healBar.SetText($"{currentHp}/{maxHp}");
             Controller.instance.controlCanvasUI.healthText.text = $"{currentHp}/{maxHp}";
         }
+        public bool IsDead()
+        {
+            return isDead;
+        }
         public void Dead()
         {
 
@@ -330,17 +410,30 @@ namespace ThroughTheWoods
         }
         public void LoadCharacterBar()
         {
-            currentHp = maxHp;
+            if (currentHp == 0)
+            {
+                currentHp = maxHp;
+            }
             healBar.SetMaxValue(maxHp);
             healBar.SetValue(currentHp);
             healBar.SetText($"{currentHp}/{maxHp}");
 
-            currentMp = maxMp;
+            if (currentMp == 0)
+            {
+                currentMp = maxMp;
+            }
             mpBar.SetMaxValue(maxMp);
             mpBar.SetValue(currentMp);
             mpBar.SetText($"{currentMp}/{maxMp}");
 
+            expBar.SetMaxValue(GetExpToNextLevel());
+            expBar.SetValue(curExp);
+
             Controller.instance.controlCanvasUI.levelText.text = $"Level: {curLevel}";
+
+            Controller.instance.controlCanvasUI.UpdateAttribute(EAttribute.Health, attributeCount, curAttributeHeal);
+            Controller.instance.controlCanvasUI.UpdateAttribute(EAttribute.Damage, attributeCount, curAttributeDamage);
+            Controller.instance.controlCanvasUI.UpdateAttribute(EAttribute.Defend, attributeCount, curAttributeCristical);
         }
         public void LoadInfoUI()
         {
@@ -381,7 +474,7 @@ namespace ThroughTheWoods
 
             attributeCount -= 1;
             curAttributeHeal += 1;
-            Controller.instance.controlCanvasUI.PlusAttribute(EAttribute.Health, attributeCount, curAttributeHeal);
+            Controller.instance.controlCanvasUI.UpdateAttribute(EAttribute.Health, attributeCount, curAttributeHeal);
             HealUpdate(10);
         }
         public void UpDamageAttribute()
@@ -390,7 +483,7 @@ namespace ThroughTheWoods
 
             attributeCount -= 1;
             curAttributeDamage += 1;
-            Controller.instance.controlCanvasUI.PlusAttribute(EAttribute.Damage, attributeCount, curAttributeDamage);
+            Controller.instance.controlCanvasUI.UpdateAttribute(EAttribute.Damage, attributeCount, curAttributeDamage);
             DamageUpdate(5);
         }
         public void UpCristicalAttribute()
@@ -399,7 +492,7 @@ namespace ThroughTheWoods
 
             attributeCount -= 1;
             curAttributeCristical += 1;
-            Controller.instance.controlCanvasUI.PlusAttribute(EAttribute.Defend, attributeCount, curAttributeCristical);
+            Controller.instance.controlCanvasUI.UpdateAttribute(EAttribute.Defend, attributeCount, curAttributeCristical);
             CristicalUpdate(3);
         }
         void OnDrawGizmosSelected()
