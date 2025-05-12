@@ -2,16 +2,16 @@
 %TAG !u! tag:unity3d.com,2011:
 --- !u!78 &1
 TagManager:
-  serializedVersion: 2
+  serializedVersion: 3
   tags:
   - Enemy
   - WallAndSprite
-  - Item
   - BoxItem
   - Weapon
   - Arrow
   - Missile
   - Exp
+  - Fruits
   layers:
   - Default
   - TransparentFX
@@ -19,7 +19,7 @@ TagManager:
   - 
   - Water
   - UI
-  - Fruits
+  - Item
   - CoinGem
   - Enemy
   - Exp
@@ -46,6 +46,20 @@ TagManager:
   - 
   - 
   m_SortingLayers:
+  - name: Background
+    uniqueID: 2844907005
+    locked: 0
   - name: Default
     uniqueID: 0
     locked: 0
+  - name: Midground
+    uniqueID: 2844176241
+    locked: 0
+  - name: Foreground
+    uniqueID: 1246017085
+    locked: 0
+  - name: UI
+    uniqueID: 1374261153
+    locked: 0
+  m_RenderingLayers:
+  - Default

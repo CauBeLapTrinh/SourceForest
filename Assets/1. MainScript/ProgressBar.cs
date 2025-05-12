@@ -24,6 +24,10 @@ public class ProgressBar : MonoBehaviour
 
         fill.color = gradient.Evaluate(slider.normalizedValue);
     }
+    public float GetValue()
+    {
+        return slider.value;
+    }
 
     public void SetText(string textSet)
     {
