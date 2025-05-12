@@ -6,9 +6,10 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
-    path: Assets/0. MiniGame/MonsterRust/HomeScene/HomeScene.unity
-    guid: c434496779a199142879f436a3f3994b
+    path: Assets/0. MiniGame/ThroughTheWoods/TTW_HomeScenes.unity
+    guid: ad1b350a48dff634aa9f34d806a5254d
   - enabled: 1
-    path: Assets/0. MiniGame/MonsterRust/PlayScene/Monster_RushScene.unity
-    guid: 5a03d19f351c5d2438f73fc52df0e364
+    path: Assets/0. MiniGame/ThroughTheWoods/TTW_Gameplay.unity
+    guid: 4eb33ae41390a7046bce3c6132848dd6
   m_configObjects: {}
+  m_UseUCBPForAssetBundles: 0
