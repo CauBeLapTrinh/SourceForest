@@ -23,12 +23,16 @@ namespace ThroughTheWoods
         [Header("---- Properties ----")]
         public MonsterType monsterType;
         public float maxHeal;
+        public ProgressBar healthBar;
+        float timeShowHealthBar = 0f;
         float currentHeal;
         //Animator animator;
         bool isDead = false;
         float timeRevive = 5f;
         [Header("Attack")]
         public int damageDefault;
+        public float rangeAttack;
+        public float rangeFollow = 3f;
         [HideInInspector] public bool isAttack = false;
         [Header("AI Movement")]
         public float movement;
@@ -65,6 +69,9 @@ namespace ThroughTheWoods
             limitRangeX = new Vector2(transform.position.x - movementRange, transform.position.x + movementRange);
             limitRangeY = new Vector2(transform.position.y - movementRange, transform.position.y + movementRange);
             RandomTagetPos();
+
+            healthBar.SetMaxValue(maxHeal);
+            healthBar.SetValue(maxHeal);
         }
 
         public void SetStateAnimationIndex(PlayerState state, int index = 0)
@@ -80,7 +87,14 @@ namespace ThroughTheWoods
         // Update is called once per frame
         public virtual void Update()
         {
-
+            if (healthBar.gameObject.activeSelf)
+            {
+                timeShowHealthBar -= Time.deltaTime;
+                if (timeShowHealthBar <= 0)
+                {
+                    healthBar.gameObject.SetActive(false);
+                }
+            }
         }
 
         public virtual void FixedUpdate()
@@ -126,7 +140,7 @@ namespace ThroughTheWoods
             {
                 float distanceTarget = Vector2.Distance(transform.position, targetFollow.position);
 
-                if (distanceTarget < 3f && RangeCheck())
+                if (distanceTarget < rangeFollow && RangeCheck())
                 {
                     FollowTarget(distanceTarget);
                 }
@@ -151,11 +165,10 @@ namespace ThroughTheWoods
         {
             FaceCheck(targetFollow.position);
 
-            if (distance > 0.8f)
+            if (distance > rangeAttack)
             {
                 movement = 1;
                 transform.position = Vector3.MoveTowards(transform.position, targetFollow.position, speed * Time.fixedDeltaTime);
-
             }
             else
             {
@@ -218,6 +231,10 @@ namespace ThroughTheWoods
             Vector3 theScale = transform.localScale;
             theScale.x = dir;
             transform.localScale = theScale;
+
+            Vector3 theScaleHealthBar = healthBar.transform.localScale;
+            theScaleHealthBar.x = dir;
+            healthBar.transform.localScale = theScaleHealthBar;
         }
         public void SetTargetFollow(Transform targetSet)
         {
@@ -228,6 +245,13 @@ namespace ThroughTheWoods
             if (isDead) return;
 
             currentHeal -= damage;
+            healthBar.SetValue(currentHeal);
+            timeShowHealthBar = 4f;
+            if (!healthBar.gameObject.activeSelf)
+            {
+                healthBar.gameObject.SetActive(true);
+            }
+            Instantiate(Controller.instance.controlPrefabs.bloodVfx, transform.position + Vector3.up, Quaternion.identity);
             //animator.SetTrigger("Hit");
             PlayStateAnimation(PlayerState.DAMAGED);
             Vector2 posSpawn = transform.position + Vector3.up;

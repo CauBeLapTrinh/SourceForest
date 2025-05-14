@@ -52,9 +52,23 @@ namespace ThroughTheWoods
             if (missionListText == null) return;
 
             missionListText.text = ""; // Xóa nội dung cũ
-
-            string status = mission.isMissionCompleted ? "Completed" : $"{mission.currentKillCount}/{mission.targetKillCount}";
+            string status = ""; // Trạng thái nhiệm vụ
+            if (mission.isMissionCompleted)
+            {
+                status = "Completed";
+                Invoke(nameof(NextMission), 3f); // Chuyển sang nhiệm vụ tiếp theo sau 3 giây
+            }
+            else
+            {
+                status = $"{mission.currentKillCount}/{mission.targetKillCount}";
+            }
             missionListText.text += $"{mission.missionName}: {status}\n";
+        }
+
+        public void NextMission()
+        {
+            currentMission = GetCurrentMission();
+            UpdateMissionUI(currentMission);
         }
     }
 }

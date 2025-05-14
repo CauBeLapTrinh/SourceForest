@@ -7,6 +7,8 @@ namespace ThroughTheWoods
         public GameObject arrowPrefab;
         public GameObject collectPrefab;
         public GameObject textHit;
+        [Header("VFX")]
+        public GameObject bloodVfx;
 
         // Start is called once before the first execution of Update after the MonoBehaviour is created
         void Start()

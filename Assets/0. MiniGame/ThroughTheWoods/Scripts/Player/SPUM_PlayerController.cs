@@ -186,7 +186,7 @@ namespace ThroughTheWoods
             {
                 yield break;
             }
-
+            SoundController.instance.PlayOneShotByName("attack_sword");
             skillUI.StartDelay(0.5f);
             currentMp -= 10;
             mpBar.SetValue(currentMp);
@@ -208,7 +208,7 @@ namespace ThroughTheWoods
             {
                 yield break;
             }
-
+            SoundController.instance.PlayOneShotByName("attack_bow");
             skillUI.StartDelay(0.8f);
             currentMp -= 15;
             mpBar.SetValue(currentMp);
