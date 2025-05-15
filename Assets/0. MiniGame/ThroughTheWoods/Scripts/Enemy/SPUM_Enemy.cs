@@ -23,6 +23,7 @@ namespace ThroughTheWoods
         [Header("---- Properties ----")]
         public MonsterType monsterType;
         public float maxHeal;
+        public GameObject infoCanvas;
         public ProgressBar healthBar;
         float timeShowHealthBar = 0f;
         float currentHeal;
@@ -232,9 +233,9 @@ namespace ThroughTheWoods
             theScale.x = dir;
             transform.localScale = theScale;
 
-            Vector3 theScaleHealthBar = healthBar.transform.localScale;
-            theScaleHealthBar.x = dir;
-            healthBar.transform.localScale = theScaleHealthBar;
+            Vector3 theScaleInfo = infoCanvas.transform.localScale;
+            theScaleInfo.x = dir;
+            infoCanvas.transform.localScale = theScaleInfo;
         }
         public void SetTargetFollow(Transform targetSet)
         {

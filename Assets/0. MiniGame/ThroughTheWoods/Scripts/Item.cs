@@ -51,11 +51,14 @@ namespace ThroughTheWoods
             {
                 case ItemEffectType.Heal:
                     playerController.Healing(effectValue);
+                    SoundController.instance.PlayOneShotListByName("collect_fruit");
                     break;
                 case ItemEffectType.Mana:
                     playerController.RestoreMana(effectValue);
+                    SoundController.instance.PlayOneShotListByName("collect_fruit");
                     break;
                 case ItemEffectType.Exp:
+                    SoundController.instance.PlayOneShotByName("collect_coin");
                     playerController.GainExp(effectValue);
                     break;
                 default:

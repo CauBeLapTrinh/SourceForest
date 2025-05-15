@@ -10,16 +10,14 @@ namespace ThroughTheWoods
         public int targetKillCount; // Số lượng quái vật cần tiêu diệt
         public int currentKillCount; // Số lượng quái vật đã tiêu diệt
         public int rewardExp; // EXP thưởng
-        public int rewardGold; // Vàng thưởng
         public bool isMissionCompleted; // Trạng thái nhiệm vụ
 
-        public Mission(string name, int target, int exp, int gold)
+        public Mission(string name, int target, int exp)
         {
             missionName = name;
             targetKillCount = target;
             currentKillCount = 0;
             rewardExp = exp;
-            rewardGold = gold;
             isMissionCompleted = false;
         }
 
@@ -37,7 +35,9 @@ namespace ThroughTheWoods
         private void CompleteMission()
         {
             isMissionCompleted = true;
-            Debug.Log($"Mission '{missionName}' completed! Reward: {rewardExp} EXP, {rewardGold} Gold");
+            // Thực hiện các hành động khi nhiệm vụ hoàn thành
+            Controller.instance.playerScript.GainExp(rewardExp);
+            Debug.Log($"Mission '{missionName}' completed! Reward: {rewardExp} EXP");
         }
     }
 }

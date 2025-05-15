@@ -6,8 +6,8 @@ namespace ThroughTheWoods
 {
     public enum MonsterType
     {
-        Goblin,
-        Troll,
+        Skeleton,
+        SkeletonArcher,
         Dragon
     }
     public class MissionManager : MonoBehaviour
@@ -43,6 +43,7 @@ namespace ThroughTheWoods
         public void OnMonsterKilled(MonsterType monsterDeadType)
         {
             currentMission = GetCurrentMission();
+            if (currentMission == null) return; // Nếu không có nhiệm vụ nào còn lại
             currentMission.OnMonsterKilled(monsterDeadType);
             UpdateMissionUI(currentMission);
         }
@@ -53,6 +54,12 @@ namespace ThroughTheWoods
 
             missionListText.text = ""; // Xóa nội dung cũ
             string status = ""; // Trạng thái nhiệm vụ
+            if (currentMission == null)
+            {
+                missionListText.text += $"+ Completed All Missions\n";
+                return;
+            }
+
             if (mission.isMissionCompleted)
             {
                 status = "Completed";
@@ -62,7 +69,7 @@ namespace ThroughTheWoods
             {
                 status = $"{mission.currentKillCount}/{mission.targetKillCount}";
             }
-            missionListText.text += $"{mission.missionName}: {status}\n";
+            missionListText.text += $"+ {mission.missionName}: {status}\n";
         }
 
         public void NextMission()

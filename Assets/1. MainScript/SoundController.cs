@@ -7,6 +7,13 @@ public class SoundEffect
     public AudioClip clip;
     [Range(0f, 1f)] public float volume = 1f;
 }
+[System.Serializable]
+public class SoundEffectList
+{
+    public string name;
+    public AudioClip[] clips;
+    [Range(0f, 1f)] public float volume = 1f;
+}
 
 public class SoundController : MonoBehaviour
 {
@@ -30,6 +37,7 @@ public class SoundController : MonoBehaviour
     [Header("Sound Effect")]
     public AudioSource audioEffect;
     public SoundEffect[] soundEffects;
+    public SoundEffectList[] soundEffectList;
 
     void Start()
     {
@@ -59,6 +67,20 @@ public class SoundController : MonoBehaviour
             if (sfx.name == soundName && sfx.clip != null)
             {
                 audioEffect.PlayOneShot(sfx.clip, sfx.volume);
+                return;
+            }
+        }
+        Debug.LogWarning($"SoundEffect '{soundName}' not found!");
+    }
+    public void PlayOneShotListByName(string soundName)
+    {
+        foreach (var sfx in soundEffectList)
+        {
+            if (sfx.name == soundName && sfx != null)
+            {
+                if (sfx.clips.Length == 0) return;
+                int idx = Random.Range(0, sfx.clips.Length);
+                audioEffect.PlayOneShot(sfx.clips[idx], sfx.volume);
                 return;
             }
         }
