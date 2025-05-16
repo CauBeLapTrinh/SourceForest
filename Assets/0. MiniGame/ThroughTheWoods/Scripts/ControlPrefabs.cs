@@ -9,6 +9,7 @@ namespace ThroughTheWoods
         public GameObject textHit;
         [Header("VFX")]
         public GameObject bloodVfx;
+        public GameObject fireballExplosionVfx;
 
         // Start is called once before the first execution of Update after the MonoBehaviour is created
         void Start()

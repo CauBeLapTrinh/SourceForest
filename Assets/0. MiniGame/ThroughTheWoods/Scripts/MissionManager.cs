@@ -8,7 +8,7 @@ namespace ThroughTheWoods
     {
         Skeleton,
         SkeletonArcher,
-        Dragon
+        DevilWitch
     }
     public class MissionManager : MonoBehaviour
     {

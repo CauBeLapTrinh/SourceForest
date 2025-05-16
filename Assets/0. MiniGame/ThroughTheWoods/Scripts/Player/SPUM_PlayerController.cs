@@ -320,8 +320,8 @@ namespace ThroughTheWoods
             cristical += 1; // Tăng tỉ lệ chí mạng
             AttributeUpdate(1);
 
-            recoveryHpPerSecond += 1f; // Tăng tốc độ hồi máu
-            recoveryMpPerSecond += 0.5f; // Tăng tốc độ hồi mana
+            recoveryHpPerSecond += 2f; // Tăng tốc độ hồi máu
+            recoveryMpPerSecond += 1f; // Tăng tốc độ hồi mana
             SoundController.instance.PlayOneShotByName("level_up");
             // Hồi đầy máu và mana
             // currentHp = maxHp;
@@ -379,7 +379,7 @@ namespace ThroughTheWoods
         {
 
         }
-        float recoveryHpPerSecond = 3f;
+        float recoveryHpPerSecond = 2f;
         public void RecoveryHp()
         {
             delayRecoveryHp -= Time.deltaTime;
@@ -396,7 +396,7 @@ namespace ThroughTheWoods
                 delayRecoveryHp = 1f;
             }
         }
-        float recoveryMpPerSecond = 2f;
+        float recoveryMpPerSecond = 3f;
         public void RecoveryMp()
         {
             delayRecoveryMp -= Time.deltaTime;

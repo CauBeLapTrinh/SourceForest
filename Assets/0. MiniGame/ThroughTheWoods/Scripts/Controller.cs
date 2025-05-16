@@ -11,6 +11,7 @@ namespace ThroughTheWoods
         [Header("Player")]
         public SPUM_PlayerController playerScript;
         [Header("Layer")]
+        public LayerMask playerLayer;
         public LayerMask enemyLayer;
         [Header("Control")]
         public ControlPrefabs controlPrefabs;
