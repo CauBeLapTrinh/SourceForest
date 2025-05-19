@@ -15,13 +15,14 @@ namespace ThroughTheWoods
         Vector2 movement;
         bool isFacingRight = false;
         public SPUM_Prefabs _prefabs;
+        SPUM_PlayerController playerController;
         private PlayerState _currentState;
         public bool isAction = false;
         public Dictionary<PlayerState, int> IndexPair = new();
         void Start()
         {
             rb = GetComponent<Rigidbody2D>();
-
+            playerController = GetComponent<SPUM_PlayerController>();
             if (_prefabs == null)
             {
                 _prefabs = transform.GetChild(0).GetComponent<SPUM_Prefabs>();
@@ -51,7 +52,7 @@ namespace ThroughTheWoods
         }
         void FixedUpdate()
         {
-            if (isAction) return;
+            if (isAction || playerController.IsDead()) return;
 
             if (movement.magnitude < 0.1f)
             {

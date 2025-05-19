@@ -91,6 +91,7 @@ namespace ThroughTheWoods
         // Update is called once per frame
         void Update()
         {
+            if (isDead) return;
             // Kiểm tra nếu người chơi click chuột
             if (Input.GetMouseButtonDown(0) && !Controller.instance.controlCanvasUI.IsOncanvas()) // 0 là nút chuột trái
             {
@@ -280,7 +281,8 @@ namespace ThroughTheWoods
             // Kiểm tra nếu đủ EXP để lên cấp
             if (curExp >= GetExpToNextLevel())
             {
-                LevelUp();
+                int balanceExp = curExp - GetExpToNextLevel();
+                LevelUp(balanceExp);
             }
         }
         public void Healing(int amount)
@@ -310,10 +312,10 @@ namespace ThroughTheWoods
             return curLevel * 100; // Ví dụ: mỗi cấp độ cần 100 * cấp độ EXP
         }
 
-        private void LevelUp()
+        private void LevelUp(int balanceExp)
         {
             curLevel += 1; // Tăng cấp độ
-            curExp = 0; // Reset EXP sau khi lên cấp
+            curExp = balanceExp; // Reset EXP sau khi lên cấp
             maxHp += 10; // Tăng máu tối đa
             maxMp += 5; // Tăng mana tối đa
             damageDefault += 3; // Tăng sát thương cơ bản
@@ -377,7 +379,9 @@ namespace ThroughTheWoods
         }
         public void Dead()
         {
-
+            isDead = true;
+            PlayStateAnimation(PlayerState.DEATH);
+            Controller.instance.controlCanvasUI.SetGameOver();
         }
         float recoveryHpPerSecond = 2f;
         public void RecoveryHp()

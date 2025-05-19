@@ -57,11 +57,32 @@ namespace ThroughTheWoods
             Collider2D[] colliders = Physics2D.OverlapCircleAll(transform.position, rangeAttack, Controller.instance.playerLayer);
             if (colliders.Length > 0)
             {
-                targetFollow = colliders[0].transform;
+                foreach (Collider2D collider in colliders)
+                {
+                    if (collider.TryGetComponent(out Health health))
+                    {
+                        if (!health.IsDead())
+                        {
+                            targetFollow = collider.transform;
+                        }
+                    }
+                }
             }
         }
         public void Attack()
         {
+            if (targetFollow == null)
+                return;
+
+            if (targetFollow.TryGetComponent(out Health health))
+            {
+                if (health.IsDead())
+                {
+                    targetFollow = null;
+                    return;
+                }
+            }
+
             if (!IsDead())
                 StartCoroutine(Attack1(damageDefault, targetFollow.position));
         }

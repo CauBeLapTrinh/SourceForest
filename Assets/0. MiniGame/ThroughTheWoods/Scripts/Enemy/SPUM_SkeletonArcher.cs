@@ -39,6 +39,15 @@ namespace ThroughTheWoods
         }
         public void Attack()
         {
+            if (targetFollow.TryGetComponent(out Health health))
+            {
+                if (health.IsDead())
+                {
+                    targetFollow = null;
+                    return;
+                }
+            }
+
             if (!IsDead())
                 StartCoroutine(Attack1(damageDefault, targetFollow.position));
         }

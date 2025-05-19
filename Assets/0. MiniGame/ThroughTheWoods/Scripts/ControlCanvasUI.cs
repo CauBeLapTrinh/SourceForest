@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using DG.Tweening;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -20,6 +21,9 @@ namespace ThroughTheWoods
         public ProgressBar progressLoading;
         float currentLoading = 0;
         public GameObject[] panelIndex;
+        [Header("GameOver")]
+        public GameObject canvasGameOver;
+        public Transform gameOverUI;
         [Header("--- InfoUI ---")]
         public Text healthText;
         public Text damageText;
@@ -35,13 +39,7 @@ namespace ThroughTheWoods
         public List<Image> skillImages;
         void Start()
         {
-            if (isLoading)
-            {
-                canvasLoading.SetActive(true);
-                progressLoading.SetMaxValue(100);
-                progressLoading.SetValue(0);
-                progressLoading.SetText(progressLoading.GetValue().ToString() + "%");
-            }
+            SetLoading();
         }
         void Update()
         {
@@ -67,17 +65,32 @@ namespace ThroughTheWoods
         }
         void FixedUpdate()
         {
-            if (isLoading)
-            {
-                LoadingUI();
-            }
+
+        }
+        public void SetGameOver()
+        {
+            StartCoroutine(IEGameOver());
+        }
+        public IEnumerator IEGameOver()
+        {
+            yield return new WaitForSeconds(2f);
+            canvasGameOver.SetActive(true);
+            gameOverUI.DOScale(1, 0.5f).SetEase(Ease.InBounce);
+        }
+        public void SetLoading()
+        {
+            canvasLoading.SetActive(true);
+            progressLoading.SetMaxValue(100);
+            progressLoading.SetValue(0);
+            progressLoading.SetText(progressLoading.GetValue().ToString() + "%");
+            LoadingUI();
         }
         public void LoadingUI()
         {
             if (currentLoading < 100)
             {
                 // Tăng giá trị loading một cách ngẫu nhiên để tạo cảm giác sinh động
-                float increment = Random.Range(1f, 2f); // Tăng từ 1 đến 5 mỗi lần
+                float increment = Random.Range(1f, 3f); // Tăng từ 1 đến 5 mỗi lần
                 currentLoading = Mathf.Min(currentLoading + increment, 100); // Đảm bảo không vượt quá 100
 
                 // Cập nhật thanh progress và text
@@ -100,7 +113,8 @@ namespace ThroughTheWoods
 
         private IEnumerator WaitAndContinueLoading()
         {
-            float waitTime = Random.Range(0.4f, 0.6f); // Thời gian chờ ngẫu nhiên từ 0.1 đến 0.3 giây
+            float waitTime = Random.Range(0.05f, 0.1f); // Thời gian chờ ngẫu nhiên từ 0.1 đến 0.3 giây
+            //float waitTime = 0.05f; // Thời gian chờ
             yield return new WaitForSeconds(waitTime);
 
             // Tiếp tục cập nhật loading

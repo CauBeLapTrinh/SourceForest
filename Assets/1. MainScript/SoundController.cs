@@ -58,6 +58,17 @@ public class SoundController : MonoBehaviour
         audioBgMusic.volume = bgVolume;
         audioBgMusic.Play();
     }
+    public void OnclickPlayBgMusic()
+    {
+        if (audioBgMusic != null && !audioBgMusic.isPlaying)
+        {
+            audioBgMusic.Play();
+        }
+        else
+        {
+            audioBgMusic.Stop();
+        }
+    }
 
     // Phát hiệu ứng âm thanh theo tên
     public void PlayOneShotByName(string soundName)

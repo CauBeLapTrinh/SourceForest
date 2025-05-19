@@ -13,7 +13,6 @@ namespace ThroughTheWoods
 
             Instantiate(explosionPrefab, transform.position, Quaternion.identity);
             Collider2D[] colliders = Physics2D.OverlapCircleAll(transform.position, 1, Controller.instance.playerLayer);
-            Debug.Log(colliders.Length);
             foreach (Collider2D collider in colliders)
             {
                 Health health = collider.GetComponent<Health>();

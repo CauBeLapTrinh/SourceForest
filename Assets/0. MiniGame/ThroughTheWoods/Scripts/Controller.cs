@@ -64,6 +64,10 @@ namespace ThroughTheWoods
         {
             playerScript.SetWeaponSprite(indexWeapon, skillUISet);
         }
+        public void BackToHome()
+        {
+            SceneManager.LoadScene(0);
+        }
         public void SavePlayerPrefs()
         {
             PlayerData data = playerScript.GetPlayerData();
