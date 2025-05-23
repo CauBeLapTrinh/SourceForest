@@ -4,9 +4,19 @@ namespace ThroughTheWoods
 {
     public class FireballWitch : MonoBehaviour
     {
+        public bool isFollow;
+        public Transform targetFollow;
+        public float speed;
         int damage;
         SPUM_Enemy root;
         public GameObject explosionPrefab;
+        void FixedUpdate()
+        {
+            if (isFollow)
+            {
+                transform.position = Vector3.MoveTowards(transform.position, targetFollow.position, speed * Time.fixedDeltaTime);
+            }
+        }
         // Start is called once before the first execution of Update after the MonoBehaviour is created
         void OnDestroy()
         {

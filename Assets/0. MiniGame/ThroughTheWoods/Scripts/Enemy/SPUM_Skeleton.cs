@@ -27,7 +27,7 @@ namespace ThroughTheWoods
                 if (delayAttack < 0)
                 {
                     Attack();
-                    delayAttack = 2f;
+                    delayAttack = 1 / speedAttack;
                 }
             }
         }

@@ -33,6 +33,7 @@ namespace ThroughTheWoods
         [Header("Attack")]
         public int damageDefault;
         public float rangeAttack;
+        public float speedAttack = 0.5f;
         public float rangeFollow = 3f;
         [HideInInspector] public bool isAttack = false;
         [Header("AI Movement")]

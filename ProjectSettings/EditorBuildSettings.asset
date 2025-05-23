@@ -6,7 +6,7 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
-    path: Assets/0. MiniGame/ThroughTheWoods/TTW_HomeScenes.unity
+    path: Assets/0. MiniGame/ThroughTheWoods/TTW_HomeScene.unity
     guid: ad1b350a48dff634aa9f34d806a5254d
   - enabled: 1
     path: Assets/0. MiniGame/ThroughTheWoods/TTW_Gameplay.unity
